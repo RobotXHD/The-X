@@ -46,7 +46,7 @@ public class TeleOP_Chassis extends OpMode {
                     v = 1;
                 } else if (gamepad1.left_bumper) {
                     v = 2;
-                }
+                 }
                 /**getting the gamepad joystick values*/
                 forward = gamepad1.left_stick_y;
                 right = -gamepad1.left_stick_x;

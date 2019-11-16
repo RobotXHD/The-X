@@ -17,10 +17,10 @@ public class BulkTest extends OpMode {
     private long fpsEnc, fpsEncLast, sysTimeEnc;
     @Override
     public void init() {
-        expansionHubEx = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub Odometrie");
-        encDr = (ExpansionHubMotor) hardwareMap.dcMotor.get("encoderDreapta");
-        encSp = (ExpansionHubMotor) hardwareMap.dcMotor.get("encoderSpate");
-        encSt = (ExpansionHubMotor) hardwareMap.dcMotor.get("encoderStanga");
+        expansionHubEx = hardwareMap.get(ExpansionHubEx.class, configs.expansionHubOdometrieName );
+        encDr = (ExpansionHubMotor) hardwareMap.dcMotor.get(configs.encDrName);
+        encSp = (ExpansionHubMotor) hardwareMap.dcMotor.get(configs.encSpName);
+        encSt = (ExpansionHubMotor) hardwareMap.dcMotor.get(configs.encStName);
 
         sysTimeEnc = System.currentTimeMillis();
 

@@ -26,7 +26,7 @@ public class HardwareSkybot extends LinearOpMode {
     public boolean gradualAcc;
     public volatile long v = 0;
     public double power = 0;
-
+    public double d;
     public double kp = -0.01;
     public double delta;
 
@@ -95,11 +95,27 @@ public class HardwareSkybot extends LinearOpMode {
         double tStart = System.currentTimeMillis()/1000.0; // sec
         while((tTemp = System.currentTimeMillis()/1000.0 - tStart) < tAcc){
             v = (int) tTemp * accMax;
+            d = (tTemp*v)/2;
+            telemetry.addData("D: ",d);
+            telemetry.addData("Ttemp: ",tTemp);
+            telemetry.addData("V: ",v);
+            telemetry.update();
         }
         v = vMax;
-        while((tTemp = (System.currentTimeMillis() - tStart)/1000.0) < t - tAcc){}
+        while((tTemp = (System.currentTimeMillis() - tStart)/1000.0) < t - tAcc){
+            d = vMax*(2*tTemp- tAcc)/2;
+            telemetry.addData("D: ",d);
+            telemetry.addData("Ttemp: ",tTemp);
+            telemetry.addData("V: ",v);
+            telemetry.update();
+        }
         while((tTemp = (System.currentTimeMillis() - tStart)/1000.0) < t){
             v = (int) (vMax - (tTemp - t + tAcc) * accMax);
+            d = (tAcc+tTemp-t)*(v+vMax)/2;
+            telemetry.addData("D: ",d);
+            telemetry.addData("Ttemp: ",tTemp);
+            telemetry.addData("V: ",v);
+            telemetry.update();
         }
         power(0,0,0,0);
         gradualAcc = false;

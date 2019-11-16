@@ -82,11 +82,11 @@ public class TeleOp_Colect extends OpMode {
                         apoz = !apoz;
                         if (apoz){
                             motorColectSt.setPower(-powerColect);
-                            motorColectDr.setPower(powerColect);
+                            //motorColectDr.setPower(powerColect);
                         }
                         else{
                             motorColectSt.setPower(0);
-                            motorColectDr.setPower(0);
+                          //  motorColectDr.setPower(0);
                         }
                     }
                     alast=abut;
@@ -98,11 +98,11 @@ public class TeleOp_Colect extends OpMode {
                         apoz2 = !apoz2;
                         if (apoz2){
                             motorColectSt.setPower(powerColect);
-                            motorColectDr.setPower(-powerColect);
+                            //motorColectDr.setPower(-powerColect);
                         }
                         else{
                             motorColectSt.setPower(0);
-                            motorColectDr.setPower(0);
+                           // motorColectDr.setPower(0);
                         }
                     }
                     alast2=abut2;
@@ -187,16 +187,16 @@ public class TeleOp_Colect extends OpMode {
     @Override
     public void init(){
         /**initialization motors*/
-        motordf = hardwareMap.get(DcMotorEx.class, "df");
-        motords = hardwareMap.get(DcMotorEx.class, "ds");//encSt
-        motorsf = hardwareMap.get(DcMotorEx.class, "sf");//encDr
-        motorss = hardwareMap.get(DcMotorEx.class, "ss");//encSp
+        motordf = hardwareMap.get(DcMotorEx.class, configs.dfName);
+        motords = hardwareMap.get(DcMotorEx.class, configs.dsName);//encSt
+        motorsf = hardwareMap.get(DcMotorEx.class, configs.sfName);//encDr
+        motorss = hardwareMap.get(DcMotorEx.class, configs.ssName);//encSp
 
-        motorColectDr = hardwareMap.get(DcMotor.class, "colectDr");
-        motorColectSt = hardwareMap.get(DcMotor.class, "colectSt");
+        motorColectDr = hardwareMap.get(DcMotor.class, configs.colectDrName);
+        motorColectSt = hardwareMap.get(DcMotor.class, configs.colectStName);
 
-        scissorDreapta = hardwareMap.dcMotor.get("scissorDr");
-        scissorStanga = hardwareMap.dcMotor.get("scissorSt");
+        scissorDreapta = hardwareMap.dcMotor.get(configs.scissorDrName);
+        scissorStanga = hardwareMap.dcMotor.get(configs.scissorStName);
 
         servoclamp = hardwareMap.servo.get("clamp");
         servoBrDr = hardwareMap.servo.get("brDr");
