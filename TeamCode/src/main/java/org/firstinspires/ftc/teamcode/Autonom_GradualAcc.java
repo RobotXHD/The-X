@@ -6,45 +6,41 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.RevBulkData;
 
 @Autonomous
-public class Test_Formule_miscare_Auto extends LinearOpMode {
+public class Autonom_GradualAcc extends LinearOpMode {
     private RevBulkData bulkData;
     private ExpansionHubMotor encoderDreapta, encoderSpate, encoderStanga;
     private ExpansionHubEx expansionHub;
-    long EncSp, EncSt, EncDr;
-    public DcMotorEx motorss, motorsf, motords, motordf;
+    private long EncSp, EncSt, EncDr;
+    private ExpansionHubMotor motorss, motorsf, motords, motordf;
 
-    public HardwareMap hwmap;
-    long vMax = 5000; // ticks/sec
-    long accMax = 2500; // ticks/sec/sec
-    long tAcc = vMax / accMax; // sec
-    long t;
-    double tTemp; //sec
-    double d;
-    double v, tStart;
-    boolean gradualAcc, startThreads = true;
-    public long kp = 0, ki = 0, kd = 0;
-    public double power = 0, delta = 0;
-    double timeChange, lastTime, lastDelta, deltaSum, dDelta;
-
+    private long vMax = 5000; // ticks/sec
+    private long accMax = 2500; // ticks/sec/sec
+    private long tAcc = vMax / accMax; // sec
+    private long t;
+    private double tTemp; //sec
+    private double d;
+    private double v, tStart;
+    private boolean gradualAcc, startThreads = true;
+    private double kp = 0.0001, ki = 0, kd = 0;
+    private double power = 0, delta = 0;
+    private double timeChange, lastTime, lastDelta, deltaSum, dDelta;
     @Override
-    public void runOpMode() throws InterruptedException {
-        hwmap = hardwareMap;
-        expansionHub = hwmap.get(ExpansionHubEx.class, configs.expansionHubOdometrieName);
-        motorss = hwmap.get(DcMotorEx.class, "ss");
-        motords = hwmap.get(DcMotorEx.class, "ds");
-        motorsf = hwmap.get(DcMotorEx.class, "sf");
-        motordf = hwmap.get(DcMotorEx.class, "df");
+    public void runOpMode(){
+        expansionHub = hardwareMap.get(ExpansionHubEx.class, configs.expansionHubOdometrieName);
+        motorss = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, configs.ssName);
+        motords = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, configs.dsName);
+        motorsf = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, configs.sfName);
+        motordf = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, configs.dfName);
 
-        encoderDreapta = (ExpansionHubMotor) hwmap.get(DcMotor.class, configs.encDrName);
-        encoderSpate = (ExpansionHubMotor) hwmap.get(DcMotor.class, configs.encSpName);
-        encoderStanga = (ExpansionHubMotor) hwmap.get(DcMotor.class, configs.colectStName);
+        encoderDreapta = motordf;
+        encoderSpate = motorsf;
+        encoderStanga = motorss;
 
         motordf.setPower(0);
         motords.setPower(0);
@@ -67,24 +63,35 @@ public class Test_Formule_miscare_Auto extends LinearOpMode {
         motorss.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motords.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorss.setDirection(DcMotorSimple.Direction.REVERSE);
+        motordf.setDirection(DcMotorSimple.Direction.REVERSE);
         if (startThreads) {
             Encodere.start();
-            //PIDVelocity.start();
+            PIDVelocity.start();
         }
-
+        while(!isStarted()){
+            telemetry.addData("EncDr", EncDr);
+            telemetry.addData("EncSt", EncSt);
+            telemetry.update();
+        }
         waitForStart();
-
-        telemetry.addData("tacc", tAcc);
-        telemetry.addData("ttemp", tTemp);
-        telemetry.addData("tstart", tStart);
-        telemetry.addData("t", t);
-        telemetry.addData("d", d);
-        telemetry.update();
-        sleep(5000);
-        startThreads = false;
+        gradualAcc(20000);
+        sleep(2000);
     }
-
+    private Thread Encodere = new Thread(new Runnable() {
+        long encSpVal, encDrVal, encStVal;
+        @Override
+        public void run() {
+            while (startThreads) {
+                bulkData = expansionHub.getBulkInputData();
+                encSpVal = bulkData.getMotorCurrentPosition(encoderSpate);
+                encDrVal = bulkData.getMotorCurrentPosition(encoderDreapta);
+                encStVal = bulkData.getMotorCurrentPosition(encoderStanga);
+                EncSp = -encSpVal;
+                EncSt = encStVal;
+                EncDr = encDrVal;
+            }
+        }
+    });
     public void gradualAcc(long distantaEnc) {
         t = distantaEnc / vMax + tAcc; // sec
         tStart = System.currentTimeMillis() / 1000.0; // sec
@@ -102,6 +109,8 @@ public class Test_Formule_miscare_Auto extends LinearOpMode {
             telemetry.addData("D: ", d);
             telemetry.addData("Ttemp: ", tTemp);
             telemetry.addData("V: ", v);
+            telemetry.addData("Power", power);
+            telemetry.addData("delta", delta);
             telemetry.update();
         }
         v = vMax;
@@ -112,6 +121,8 @@ public class Test_Formule_miscare_Auto extends LinearOpMode {
             telemetry.addData("D: ", d);
             telemetry.addData("Ttemp: ", tTemp);
             telemetry.addData("V: ", v);
+            telemetry.addData("Power", power);
+            telemetry.addData("delta", delta);
             telemetry.update();
         }
         while ((tTemp = System.currentTimeMillis() / 1000.0 - tStart) < t) {
@@ -121,45 +132,27 @@ public class Test_Formule_miscare_Auto extends LinearOpMode {
             telemetry.addData("D: ", d);
             telemetry.addData("Ttemp: ", tTemp);
             telemetry.addData("V: ", v);
+            telemetry.addData("Power:", power);
+            telemetry.addData("delta", delta);
             telemetry.update();
         }
-        gradualAcc = false;
+        power(0,0,0,0);
     }
-
-    private Thread Encodere = new Thread(new Runnable() {
-        long encSpVal, encDrVal, encStVal;
-        @Override
-        public void run() {
-            while (startThreads) {
-                bulkData = expansionHub.getBulkInputData();
-                encSpVal = bulkData.getMotorCurrentPosition(encoderSpate);
-                encDrVal = bulkData.getMotorCurrentPosition(encoderDreapta);
-                encStVal = bulkData.getMotorCurrentPosition(encoderStanga);
-                EncSp = -encSpVal;
-                EncSt = -encStVal;
-                EncDr = encDrVal;
-            }
-        }
-    });
-    /*
     private Thread PIDVelocity = new Thread(new Runnable() {
         @Override
         public void run() {
             while (startThreads) {
                 if (gradualAcc) {
-                    delta = d - ((EncSt + EncDr) / 2.0);
-                    power = power + PID(delta, kp, ki, kd);
+                    delta = d + ((EncSt + EncDr) / 2.0);
+                    power = PID(delta, kp, ki, kd);
+                    if(power > 1 || power < -1){
+                        power = Math.signum(power) * 1;
+                    }
+                    power(power, power, power, power);
                 }
             }
         }
     });
-    public void power(double df, double ss, double sf, double ds) {
-        //++--
-        motordf.setPower(df);
-        motorss.setPower(ss);
-        motorsf.setPower(sf);
-        motords.setPower(ds);
-    }
     public double PID(double delta, double kp, double ki, double kd){
         timeChange = System.currentTimeMillis() - lastTime;
         deltaSum += (delta * timeChange);
@@ -167,5 +160,11 @@ public class Test_Formule_miscare_Auto extends LinearOpMode {
         lastDelta = delta;
         lastTime = System.currentTimeMillis();
         return kp * delta + ki * deltaSum + kd * dDelta;
-    }*/
+    }
+    private void power(double ds, double df, double ss, double sf){
+        motordf.setPower(df);
+        motorss.setPower(ss);
+        motorsf.setPower(sf);
+        motords.setPower(ds);
+    }
 }

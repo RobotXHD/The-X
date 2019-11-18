@@ -22,9 +22,10 @@ public class configs {
     public static final String sfName = "sf";
     public static final String ssName = "ss";
 
-    public static final String encStName = "ds";
-    public static final String encSpName = "ss";
-    public static final String encDrName = "sf";
+    //ss = stanga; sf = spate; df = drepta
+    public static final String encStName = "ss";
+    public static final String encSpName = "sf";
+    public static final String encDrName = "df";
 
     public static final String scissorDrName = "scissorDr";
     public static final String scissorStName = "scissorSt";

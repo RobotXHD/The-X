@@ -48,14 +48,14 @@ public class TeleOp_Colect extends OpMode {
             /**repeat until the program stops*/
             while (!stop) {
                 if (gamepad2.dpad_up) {
-                    scissorDreapta.setPower(0.6);
-                    scissorStanga.setPower(0.6);
+                    scissorDreapta.setPower(-0.6);
+                    scissorStanga.setPower(-0.6);
                 } else if (gamepad2.dpad_down) {
-                    scissorDreapta.setPower(-1);
-                    scissorStanga.setPower(-1);
+                    scissorDreapta.setPower(1);
+                    scissorStanga.setPower(1);
                 } else if (gamepad2.left_bumper) {
-                    scissorDreapta.setPower(-0.2);
-                    scissorStanga.setPower(-0.2);
+                    scissorDreapta.setPower(0.2);
+                    scissorStanga.setPower(0.2);
                 } else {
                     scissorDreapta.setPower(0);
                     scissorStanga.setPower(0);
@@ -82,11 +82,11 @@ public class TeleOp_Colect extends OpMode {
                         apoz = !apoz;
                         if (apoz){
                             motorColectSt.setPower(-powerColect);
-                            //motorColectDr.setPower(powerColect);
+                            motorColectDr.setPower(powerColect);
                         }
                         else{
                             motorColectSt.setPower(0);
-                          //  motorColectDr.setPower(0);
+                            motorColectDr.setPower(0);
                         }
                     }
                     alast=abut;
@@ -98,11 +98,11 @@ public class TeleOp_Colect extends OpMode {
                         apoz2 = !apoz2;
                         if (apoz2){
                             motorColectSt.setPower(powerColect);
-                            //motorColectDr.setPower(-powerColect);
+                            motorColectDr.setPower(-powerColect);
                         }
                         else{
                             motorColectSt.setPower(0);
-                           // motorColectDr.setPower(0);
+                            motorColectDr.setPower(0);
                         }
                     }
                     alast2=abut2;
