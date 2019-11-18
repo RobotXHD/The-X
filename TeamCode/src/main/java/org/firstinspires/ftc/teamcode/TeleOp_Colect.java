@@ -14,119 +14,125 @@ import static java.lang.Math.abs;
 
 @TeleOp
 public class TeleOp_Colect extends OpMode {
-    /**declare the motors*/
+    /**
+     * declare the motors
+     */
     private DcMotorEx motordf;
     private DcMotorEx motorsf;
     private DcMotorEx motords;
     private DcMotorEx motorss;
     private DcMotor scissorDreapta;
     private DcMotor scissorStanga;
-    private DcMotor  motorColectSt, motorColectDr;
-    private ServoImplEx vexDr,vexSt;
+    private DcMotor motorColectSt, motorColectDr;
+    private ServoImplEx vexDr, vexSt;
     private Servo servoclamp, servoBrSt, servoBrDr;
-    /**variable for changing the movement speed of the robot*/
+    /**
+     * variable for changing the movement speed of the robot
+     */
     private int v = 2;
-    /**variables for calculating the power for motors*/
+    /**
+     * variables for calculating the power for motors
+     */
     private double df;
     private double sf;
     private double ds;
     private double ss;
     private double max;
-    /**variables for holding the gamepad joystick values;
-     * we don't want to access them too many times in a loop */
+    /**
+     * variables for holding the gamepad joystick values;
+     * we don't want to access them too many times in a loop
+     */
     private double forward, right, clockwise;
-    /**variable that stops the threads when programs stop*/
+    /**
+     * variable that stops the threads when programs stop
+     */
     private boolean stop;
-    /** variables that  toggle motors collect */
+    /**
+     * variables that  toggle motors collect
+     */
     private boolean apoz = false, alast = true, apoz2 = false, alast2 = true, apoz3 = false, alast3 = true;
     private double powerColect = 0.6, powerSlider;
     private TouchSensor endStopFata;
 
-    private Thread Colect = new Thread( new Runnable() {
+    private Thread Colect = new Thread(new Runnable() {
         @Override
         public void run() {
             /**repeat until the program stops*/
             while (!stop) {
                 if (gamepad2.dpad_up) {
-                    scissorDreapta.setPower(-0.6);
-                    scissorStanga.setPower(-0.6);
+                    scissorDreapta.setPower(0.6);
+                    scissorStanga.setPower(0.6);
                 } else if (gamepad2.dpad_down) {
-                    scissorDreapta.setPower(1);
-                    scissorStanga.setPower(1);
+                    scissorDreapta.setPower(-1);
+                    scissorStanga.setPower(-1);
                 } else if (gamepad2.left_bumper) {
-                    scissorDreapta.setPower(0.2);
-                    scissorStanga.setPower(0.2);
+                    scissorDreapta.setPower(-0.2);
+                    scissorStanga.setPower(-0.2);
                 } else {
                     scissorDreapta.setPower(0);
                     scissorStanga.setPower(0);
                 }
 
                 powerSlider = gamepad2.left_stick_y;
-                if (powerSlider < 0 && !endStopFata.isPressed()){
-                    vexDr.setPosition(0.5 +powerSlider/2);
-                    vexSt.setPosition(0.5 - powerSlider/2);
-                }
-                else if (powerSlider > 0){
-                    vexDr.setPosition(0.5 +powerSlider/2);
-                    vexSt.setPosition(0.5 - powerSlider/2);
-                }
-                else {
+                if (powerSlider < 0 && !endStopFata.isPressed()) {
+                    vexDr.setPosition(0.5 + powerSlider / 2);
+                    vexSt.setPosition(0.5 - powerSlider / 2);
+                } else if (powerSlider > 0) {
+                    vexDr.setPosition(0.5 + powerSlider / 2);
+                    vexSt.setPosition(0.5 - powerSlider / 2);
+                } else {
                     vexDr.setPosition(0.5);
                     vexSt.setPosition(0.5);
                 }
 
                 /**set the collector motors on or off using the toggle*/
                 boolean abut = gamepad2.b;
-                if(alast != abut){
-                    if(gamepad2.b) {
+                if (alast != abut) {
+                    if (gamepad2.b) {
                         apoz = !apoz;
-                        if (apoz){
+                        if (apoz) {
                             motorColectSt.setPower(-powerColect);
-                            motorColectDr.setPower(powerColect);
-                        }
-                        else{
+                            //motorColectDr.setPower(powerColect);
+                        } else {
                             motorColectSt.setPower(0);
-                            motorColectDr.setPower(0);
+                            //  motorColectDr.setPower(0);
                         }
                     }
-                    alast=abut;
+                    alast = abut;
                 }
 
                 boolean abut2 = gamepad2.x;
-                if(alast2 != abut2){
-                    if(gamepad2.x) {
+                if (alast2 != abut2) {
+                    if (gamepad2.x) {
                         apoz2 = !apoz2;
-                        if (apoz2){
+                        if (apoz2) {
                             motorColectSt.setPower(powerColect);
                             motorColectDr.setPower(-powerColect);
-                        }
-                        else{
+                        } else {
                             motorColectSt.setPower(0);
                             motorColectDr.setPower(0);
                         }
                     }
-                    alast2=abut2;
+                    alast2 = abut2;
                 }
 
                 boolean abut3 = gamepad2.y;
-                if(alast3 != abut3){
-                    if(gamepad2.y) {
+                if (alast3 != abut3) {
+                    if (gamepad2.y) {
                         apoz3 = !apoz3;
-                        if (apoz3){
-                           servoclamp.setPosition(configs.pozitie_servoClamp_maxim);
-                        }
-                        else{
+                        if (apoz3) {
+                            servoclamp.setPosition(configs.pozitie_servoClamp_maxim);
+                        } else {
                             servoclamp.setPosition(configs.pozitie_servoClamp_minim);
                         }
                     }
-                    alast3=abut3;
+                    alast3 = abut3;
                 }
-                
-                if(gamepad1.dpad_down){
+
+                if (gamepad1.dpad_down) {
                     servoBrDr.setPosition(0);
                     servoBrSt.setPosition(1);
-                }
-                else if(gamepad1.dpad_up){
+                } else if (gamepad1.dpad_up) {
                     servoBrDr.setPosition(1);
                     servoBrSt.setPosition(0);
                 }
@@ -135,7 +141,7 @@ public class TeleOp_Colect extends OpMode {
         }
     });
 
-    private Thread Chassis = new Thread( new Runnable() {
+    private Thread Chassis = new Thread(new Runnable() {
         @Override
         public void run() {
             /**repeat until the program stops*/
@@ -185,7 +191,7 @@ public class TeleOp_Colect extends OpMode {
     });
 
     @Override
-    public void init(){
+    public void init() {
         /**initialization motors*/
         motordf = hardwareMap.get(DcMotorEx.class, configs.dfName);
         motords = hardwareMap.get(DcMotorEx.class, configs.dsName);//encSt
@@ -206,8 +212,8 @@ public class TeleOp_Colect extends OpMode {
 
         endStopFata = hardwareMap.touchSensor.get("endFata");
 
-        vexDr.setPwmRange(new PwmControl.PwmRange(1000,2000));
-        vexSt.setPwmRange(new PwmControl.PwmRange(1000,2000));
+        vexDr.setPwmRange(new PwmControl.PwmRange(1000, 2000));
+        vexSt.setPwmRange(new PwmControl.PwmRange(1000, 2000));
 
         motords.setDirection(DcMotorSimple.Direction.REVERSE);
         motorss.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -237,17 +243,25 @@ public class TeleOp_Colect extends OpMode {
 
     }
 
-    /**using the loop function to send the telemetry to the phone*/
+    /**
+     * using the loop function to send the telemetry to the phone
+     */
     @Override
-    public void loop(){
+    public void loop() {
 
     }
 
-    /**using the stop function to stop the threads */
-    public void stop(){stop = true;}
+    /**
+     * using the stop function to stop the threads
+     */
+    public void stop() {
+        stop = true;
+    }
 
-    /**the power function sets the motor's power*/
-    public void POWER(double df1, double sf1, double ds1, double ss1){
+    /**
+     * the power function sets the motor's power
+     */
+    public void POWER(double df1, double sf1, double ds1, double ss1) {
         motordf.setPower(df1);
         motorss.setPower(ss1);
         motorsf.setPower(sf1);
