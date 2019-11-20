@@ -77,6 +77,7 @@ public class AutonomEsuat extends LinearOpMode {
     });
 
     public void calcule(double X, double Y){
+
         double dx = X - currentX;
         double dy = Y - currentY;
 
