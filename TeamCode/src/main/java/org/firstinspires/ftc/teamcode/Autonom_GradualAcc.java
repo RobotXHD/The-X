@@ -23,13 +23,14 @@ public class Autonom_GradualAcc extends LinearOpMode {
     private long tAcc = vMax / accMax; // sec
     private long t;
     private double tTemp; //sec
-    private double d;
+    private double d, targetD;
     private double v, tStart;
     private boolean gradualAcc, startThreads = true;
-    private double kp = 0.0001, ki = 0, kd = 0;
+    private double kp = 0.00008, ki = 0.00000001953125, kd = -0.00004;//
     private double power = 0, delta = 0;
     private double timeChange, lastTime, lastDelta, deltaSum, dDelta;
     @Override
+
     public void runOpMode(){
         expansionHub = hardwareMap.get(ExpansionHubEx.class, configs.expansionHubOdometrieName);
         motorss = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, configs.ssName);
@@ -74,7 +75,18 @@ public class Autonom_GradualAcc extends LinearOpMode {
         }
         waitForStart();
         gradualAcc(20000);
-        sleep(2000);
+        long startTime = System.currentTimeMillis();
+        while(System.currentTimeMillis() - startTime < 20000){
+            telemetry.addData(" >_<", "/*_*/");
+            telemetry.addData("D: ", d);
+            telemetry.addData("Ttemp: ", tTemp);
+            telemetry.addData("V: ", v);
+            telemetry.addData("Power:", power);
+            telemetry.addData("delta", delta);
+            telemetry.addData("StartThreads", startThreads);
+            telemetry.update();
+        }
+        startThreads = false;
     }
     private Thread Encodere = new Thread(new Runnable() {
         long encSpVal, encDrVal, encStVal;
@@ -86,12 +98,13 @@ public class Autonom_GradualAcc extends LinearOpMode {
                 encDrVal = bulkData.getMotorCurrentPosition(encoderDreapta);
                 encStVal = bulkData.getMotorCurrentPosition(encoderStanga);
                 EncSp = -encSpVal;
-                EncSt = encStVal;
-                EncDr = encDrVal;
+                EncSt = -encStVal;
+                EncDr = -encDrVal;
             }
         }
     });
     public void gradualAcc(long distantaEnc) {
+        targetD = distantaEnc;
         t = distantaEnc / vMax + tAcc; // sec
         tStart = System.currentTimeMillis() / 1000.0; // sec
         if (vMax > Math.sqrt(distantaEnc * accMax)) {
@@ -110,6 +123,7 @@ public class Autonom_GradualAcc extends LinearOpMode {
             telemetry.addData("V: ", v);
             telemetry.addData("Power", power);
             telemetry.addData("delta", delta);
+            telemetry.addData("StartThreads", startThreads);
             telemetry.update();
         }
         v = vMax;
@@ -122,6 +136,7 @@ public class Autonom_GradualAcc extends LinearOpMode {
             telemetry.addData("V: ", v);
             telemetry.addData("Power", power);
             telemetry.addData("delta", delta);
+            telemetry.addData("StartThreads", startThreads);
             telemetry.update();
         }
         while ((tTemp = System.currentTimeMillis() / 1000.0 - tStart) < t) {
@@ -133,6 +148,7 @@ public class Autonom_GradualAcc extends LinearOpMode {
             telemetry.addData("V: ", v);
             telemetry.addData("Power:", power);
             telemetry.addData("delta", delta);
+            telemetry.addData("StartThreads", startThreads);
             telemetry.update();
         }
         power(0,0,0,0);
@@ -141,13 +157,17 @@ public class Autonom_GradualAcc extends LinearOpMode {
         @Override
         public void run() {
             while (startThreads) {
-                if (gradualAcc) {
-                    delta = d + ((EncSt + EncDr) / 2.0);
+                if (gradualAcc && isStarted()) {
+                    delta = d - ((EncSt + EncDr) / 2.0);
                     power = PID(delta, kp, ki, kd);
                     if(power > 1 || power < -1){
                         power = Math.signum(power) * 1;
                     }
-                    power(power, power, power, power);
+                    if(((EncSt + EncDr) / 2.0) >= targetD){
+                        power = 0;
+                        startThreads = false;
+                    }
+                    power(-power, -power, -power, -power);
                 }
             }
         }

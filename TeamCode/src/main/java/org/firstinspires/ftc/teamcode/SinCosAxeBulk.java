@@ -22,10 +22,10 @@ public class SinCosAxeBulk extends OpMode {
     /**declare the expansionHub*/
     private ExpansionHubEx expansionHub;
     /**declare the motors */
-    private DcMotorEx motordf;
-    private DcMotorEx motorsf;
-    private DcMotorEx motords;
-    private DcMotorEx motorss;
+    private ExpansionHubMotor motordf;
+    private ExpansionHubMotor motorsf;
+    private ExpansionHubMotor motords;
+    private ExpansionHubMotor motorss;
     /**variable for changing the movement speed of the robot*/
     private int v = 2;
     /**variables for calculating the power for motors*/
@@ -63,9 +63,9 @@ public class SinCosAxeBulk extends OpMode {
 
                 /**calculating the power for motors */
                 df = forward + clockwise - right;
-                ss = forward - clockwise - right;
+                ss = -forward + clockwise + right;
                 sf = -forward + clockwise - right;
-                ds = -forward - clockwise - right;
+                ds = forward + clockwise + right;
 
                 /**normalising the power values*/
                 max = abs(sf);
@@ -105,7 +105,7 @@ public class SinCosAxeBulk extends OpMode {
                     encSpVal = bulkData.getMotorCurrentPosition(encoderSpate);
                     encDrVal = bulkData.getMotorCurrentPosition(encoderDreapta);
                     encStVal = bulkData.getMotorCurrentPosition(encoderStanga);
-                    EncSp = -encSpVal;
+                    EncSp = encSpVal;
                     EncSt = -encStVal;
                     EncDr = encDrVal;
                     encodereCitite = true;
@@ -146,7 +146,7 @@ public class SinCosAxeBulk extends OpMode {
                     sindeltax = (Math.sin((PI/2)-angle) * deltaX);
 
                     y = y + (cosdeltay + cosdeltax) * mmPerTick;
-                    x = x + (sindeltay + sindeltax) * mmPerTick ;
+                    x = x + (sindeltay + sindeltax) * mmPerTick;
 
                     encodereCitite = false;
                 }
@@ -161,27 +161,27 @@ public class SinCosAxeBulk extends OpMode {
         expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub Odometrie");
 
         /**initialization motors */
-        motordf = hardwareMap.get(DcMotorEx.class, "df");
-        motords = hardwareMap.get(DcMotorEx.class, "ds");
-        motorsf = hardwareMap.get(DcMotorEx.class, "sf");
-        motorss = hardwareMap.get(DcMotorEx.class, "ss");
+        motordf = (ExpansionHubMotor) hardwareMap.get(DcMotor.class, "df");
+        motords = (ExpansionHubMotor) hardwareMap.get(DcMotor.class, "ds");
+        motorsf = (ExpansionHubMotor) hardwareMap.get(DcMotor.class, "sf");
+        motorss = (ExpansionHubMotor) hardwareMap.get(DcMotor.class, "ss");
 
         /**initialization of the encoders*/
-        encoderDreapta = (ExpansionHubMotor) hardwareMap.get(DcMotor.class,"encoderDreapta");
-        encoderSpate = (ExpansionHubMotor) hardwareMap.get(DcMotor.class,"encoderSpate");
-        encoderStanga =(ExpansionHubMotor) hardwareMap.get(DcMotor.class,"encoderStanga");
+        encoderDreapta = motordf;
+        encoderSpate = motorsf;
+        encoderStanga = motorss;
 
 
         motords.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorss.setDirection(DcMotorSimple.Direction.REVERSE);
+        motordf.setDirection(DcMotorSimple.Direction.REVERSE);//era ss
 
         /**set the mode of the  motors */
 
 
-        motordf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motords.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorsf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorss.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motordf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motords.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorsf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorss.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motordf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motords.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -203,6 +203,7 @@ public class SinCosAxeBulk extends OpMode {
         double Y = y;
         telemetry.addData("X", X);
         telemetry.addData("Y", Y);
+        telemetry.addData("angle", angle);
         telemetry.addData("EncDr: ",EncDr);
         telemetry.addData("EncSp: ",EncSp);
         telemetry.addData("EncSt: ",EncSt);

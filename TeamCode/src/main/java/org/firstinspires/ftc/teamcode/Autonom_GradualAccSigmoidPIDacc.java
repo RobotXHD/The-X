@@ -72,6 +72,7 @@ public class Autonom_GradualAccSigmoidPIDacc extends LinearOpMode {
         while(!isStarted()){
             telemetry.addData("EncDr", EncDr);
             telemetry.addData("EncSt", EncSt);
+            telemetry.addData("acc", currentAcc);
             telemetry.update();
         }
         waitForStart();
@@ -123,6 +124,8 @@ public class Autonom_GradualAccSigmoidPIDacc extends LinearOpMode {
             telemetry.addData("V: ", v);
             telemetry.addData("Power", power);
             telemetry.addData("delta", delta);
+            telemetry.addData("currentAcc",currentAcc);
+            telemetry.addData("currentV",currentV);
             telemetry.update();
         }
         v = vMax;
@@ -136,6 +139,8 @@ public class Autonom_GradualAccSigmoidPIDacc extends LinearOpMode {
             telemetry.addData("V: ", v);
             telemetry.addData("Power", power);
             telemetry.addData("delta", delta);
+            telemetry.addData("currentAcc",currentAcc);
+            telemetry.addData("currentV",currentV);
             telemetry.update();
         }
         while ((tTemp = System.currentTimeMillis() / 1000.0 - tStart) < t) {
@@ -148,6 +153,8 @@ public class Autonom_GradualAccSigmoidPIDacc extends LinearOpMode {
             telemetry.addData("V: ", v);
             telemetry.addData("Power:", power);
             telemetry.addData("delta", delta);
+            telemetry.addData("currentAcc",currentAcc);
+            telemetry.addData("currentV",currentV);
             telemetry.update();
         }
         power(0,0,0,0);
@@ -158,15 +165,17 @@ public class Autonom_GradualAccSigmoidPIDacc extends LinearOpMode {
             while (startThreads) {
                 if (gradualAcc) {
                     if(acc != 0){
+                        delta = acc - currentAcc;
                         power = power + PID(acc - currentAcc, ki, kp, kd);
                     }
                     else{
+                        delta = v - currentV;
                         power = power + PID(v - currentV, ki, kp, kd);
                     }
                     if(power > 1 || power < -1){
                         power = Math.signum(power) * 1;
                     }
-                    power(power, power, power, power);
+                    power(-power, -power, -power, -power);
                 }
             }
         }

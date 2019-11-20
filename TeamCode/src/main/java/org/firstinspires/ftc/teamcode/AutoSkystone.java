@@ -17,6 +17,16 @@ public class AutoSkystone extends LinearOpMode {
     private Point p1 = new Point(resHeight * 0.66,0);
     private Point p2 = new Point(resHeight,resWidth);
     private StoneDetectorModified stoneDetectorModified = new StoneDetectorModified(p1, p2);
+
+    private Thread Loc = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            while(!isStopRequested()){
+
+            }
+        }
+    });
+
     @Override
     public void runOpMode() {
         stoneDetectorModified.stonesToFind = 1;
