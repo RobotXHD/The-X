@@ -146,9 +146,7 @@ public class TeleOp_Colect extends OpMode {
                     servoPlatformaSt.setPosition(0);
                 }
 
-                if(gamepad1.right_trigger > 0.5 && gamepad2.right_trigger > 0.5){
-                    servoCapstone.setPosition(1);
-                }
+                servoCapstone.setPosition((gamepad1.right_trigger + gamepad2.right_trigger)/2);
 
             }
         }
