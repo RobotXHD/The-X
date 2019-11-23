@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +12,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.cos;
 
 @TeleOp
+@Disabled
 public class SinCosAxe extends OpMode {
     public DcMotor encoderDreapta, encoderSpate,encoderStanga;
     /**declare the motors*/

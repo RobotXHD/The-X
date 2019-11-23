@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.filters.DogeCVColorFilter;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -17,6 +18,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Autonomous
+@Disabled
 public class AutoLevi extends LinearOpMode {
     OpenCvCamera webcam;
     StoneDetectorModified stoneDetectorModified = new StoneDetectorModified(new Point(), new Point());

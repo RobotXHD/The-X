@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +12,7 @@ import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.RevBulkData;
 
 @TeleOp
+@Disabled
 public class TeleOp_ChassisV3 extends OpMode {
 
     private RevBulkData bulkData;

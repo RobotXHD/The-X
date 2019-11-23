@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.disnodeteam.dogecv.DogeCV;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -20,6 +21,7 @@ import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 
 @Autonomous
+@Disabled
 public class AutonomEsuat extends LinearOpMode {
     private OpenCvCamera webcam;
     private int resWidth = 800, resHeight = 448;

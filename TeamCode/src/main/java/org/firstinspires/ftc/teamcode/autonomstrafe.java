@@ -2,12 +2,14 @@
 package org.firstinspires.ftc.teamcode;
 
         import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+        import com.qualcomm.robotcore.eventloop.opmode.Disabled;
         import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
         import com.qualcomm.robotcore.hardware.DcMotor;
         import com.qualcomm.robotcore.hardware.DcMotorEx;
         import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Autonomous
+@Disabled
 public class autonomstrafe extends LinearOpMode {
 
     private DcMotorEx motordf;

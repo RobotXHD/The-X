@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,7 +12,7 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 import org.openftc.revextensions2.VexMC29;
 
 @TeleOp
-
+@Disabled
 public class scissorTest extends OpMode {
   //  private ServoImplEx vexSt, vexDr;
     private DcMotor scissorDreapta, scissorStanga;

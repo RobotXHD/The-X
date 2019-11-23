@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 @TeleOp
+@Disabled
 public class TeleOP_Servo extends OpMode {
     public Servo servorot, servosj, servoclamp;
     public ServoImplEx servomonster;

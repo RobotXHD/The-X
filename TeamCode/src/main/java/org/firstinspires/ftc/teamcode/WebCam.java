@@ -6,6 +6,7 @@ import com.disnodeteam.dogecv.detectors.skystone.StoneDetector;
 import com.disnodeteam.dogecv.filters.GrayscaleFilter;
 import com.disnodeteam.dogecv.filters.LeviColorFilter;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -14,6 +15,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Autonomous
+@Disabled
 public class WebCam extends LinearOpMode {
     private OpenCvCamera webcam;
     private StoneDetector stoneDetector = new StoneDetector();

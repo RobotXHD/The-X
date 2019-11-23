@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 
 @TeleOp
+@Disabled
 public class moto_moto_motorola extends OpMode {
     DcMotorEx motordf;
     DcMotorEx motorsf;

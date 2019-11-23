@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import static java.lang.Math.abs;
 
 @TeleOp
+@Disabled
 public class  TeleOP_S4T_ROT extends OpMode {
     /**declare the encoders and the motors*/
     private DcMotor encoderDreapta , encoderSpate;

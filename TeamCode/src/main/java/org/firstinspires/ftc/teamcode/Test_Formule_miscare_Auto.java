@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -13,6 +14,7 @@ import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.RevBulkData;
 
 @Autonomous
+@Disabled
 public class Test_Formule_miscare_Auto extends LinearOpMode {
     private RevBulkData bulkData;
     private ExpansionHubMotor encoderDreapta, encoderSpate, encoderStanga;

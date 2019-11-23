@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
@@ -20,12 +21,15 @@ public class HardwareSkybot_V2 extends LinearOpMode {
     public ExpansionHubMotor encoderDreapta, encoderSpate, encoderStanga;
     public ExpansionHubEx expansionHub;
     public ExpansionHubMotor motorss, motorsf, motords, motordf;
+    public DcMotor motorColectSt, motorColectDr;
     public double encoderDrTotal = 0, encoderStTotal = 0, encoderSpTotal = 0;
     public double rotatie = 0, rotatieTotala = 0, delta = 0;
     public double kp = 0.0001;
     public double wheelDiameter = 60;
     public double powerDr, powerSt;
     public long calculatedTicks = 0;
+    public Servo servoPlatformaSt, servoPlatformaDr;
+    public long startTime;
     public HardwareSkybot_V2(boolean startThreads){
         startTh = startThreads;
     }
@@ -37,9 +41,14 @@ public class HardwareSkybot_V2 extends LinearOpMode {
         motorsf = (ExpansionHubMotor) hard.get(DcMotorEx.class, configs.sfName);
         motordf = (ExpansionHubMotor) hard.get(DcMotorEx.class, configs.dfName);
 
+        motorColectDr = hard.get(DcMotor.class, configs.colectDrName);
+        motorColectSt = hard.get(DcMotor.class, configs.colectStName);
         encoderDreapta = motordf;
         encoderSpate = motorsf;
         encoderStanga = motorss;
+
+        servoPlatformaDr = hard.servo.get("brDr");
+        servoPlatformaSt = hard.servo.get("brSt");
 
         motordf.setPower(0);
         motords.setPower(0);
@@ -92,7 +101,7 @@ public class HardwareSkybot_V2 extends LinearOpMode {
         encoderStTotal += calculatedTicks;
         rotatieTotala = rotatie;
 
-        while(encDr < encoderDrTotal && encSt < encoderStTotal){
+        while(encDr < encoderDrTotal && encSt < encoderStTotal && startTime - System.currentTimeMillis() < 30000){
 
             delta = rotatieTotala - rotatie;
             powerDr = putere + delta * kp;
@@ -109,12 +118,13 @@ public class HardwareSkybot_V2 extends LinearOpMode {
         power(0,0,0,0);
     }
 
-    public void stanga(double distanta, double putere){
-        calculatedTicks = -Math.round(((distanta - 100)* 4000)/(PI * wheelDiameter));
-        encoderSpTotal += calculatedTicks;
+    public void spate(double distanta, double putere){
+        calculatedTicks = -Math.round(((distanta - 100 )* 4000)/(PI * wheelDiameter));
+        encoderDrTotal += calculatedTicks;
+        encoderStTotal += calculatedTicks;
         rotatieTotala = rotatie;
 
-        while(encSp > encoderSpTotal){
+        while(encDr > encoderDrTotal && encSt > encoderStTotal  && startTime - System.currentTimeMillis() < 30000){
 
             delta = rotatieTotala - rotatie;
             powerDr = putere + delta * kp;
@@ -126,12 +136,54 @@ public class HardwareSkybot_V2 extends LinearOpMode {
                 powerSt = putere;
             }
 
-            power(-powerDr, powerDr, powerSt, -powerSt);
+            power(-powerDr , -powerDr, -powerSt, -powerSt);
         }
         power(0,0,0,0);
     }
 
+    public void stanga(double distanta, double putere){
+        calculatedTicks = -Math.round(((distanta - 100)* 4000)/(PI * wheelDiameter));
+        encoderSpTotal += calculatedTicks;
+        rotatieTotala = rotatie;
 
+        while(encSp > encoderSpTotal && startTime - System.currentTimeMillis() < 30000){
+
+            delta = rotatieTotala - rotatie;
+            powerDr = delta * 0.0005;
+            if(powerDr > putere){
+                powerDr = putere;
+            }
+            powerSt = -delta * 0.0005;
+            if(powerSt > putere){
+                powerSt = putere;
+            }
+
+            power(-putere + powerDr, putere + powerDr, putere + powerSt, -putere + powerSt);
+        }
+        power(0,0,0,0);
+    }
+
+    public void dreapta(double distanta, double putere){
+        calculatedTicks = Math.round(((distanta - 100)* 4000)/(PI * wheelDiameter));
+        encoderSpTotal += calculatedTicks;
+        rotatieTotala = rotatie;
+
+        while(encSp < encoderSpTotal && startTime - System.currentTimeMillis() < 30000){
+
+            delta = rotatieTotala - rotatie;
+            powerDr = delta * 0.0005;
+            if(powerDr > putere){
+                powerDr = putere;
+            }
+            powerSt = -delta * 0.0005;
+            if(powerSt > putere){
+                powerSt = putere;
+            }
+
+            power(putere + powerDr, -putere + powerDr, -putere + powerSt, putere + powerSt);
+        }
+        power(0,0,0,0);
+    }
 
     @Override
     public void runOpMode() {

@@ -43,7 +43,7 @@ public class TeleOp_Colect extends OpMode {
     private double ds;
     private double ss;
     private double max;
-    private long encScissorDr, encScissorSt;
+    private long encScissorDr, encScissorSt, offsetDr = 0, offsetSt = 0;
     /**
      * variables for holding the gamepad joystick values;
      * we don't want to access them too many times in a loop
@@ -59,28 +59,8 @@ public class TeleOp_Colect extends OpMode {
         public void run() {
             /**repeat until the program stops*/
             while (!stop) {
-                if (gamepad2.dpad_up) {
-                    double powerDr = -1 + (encScissorDr - encScissorSt) * 0.1;
-                    double powerSt = -1 + (encScissorDr - encScissorSt) * 0.1;
-                    double min = powerDr;
-                    if(min > powerSt){
-                        min = powerSt;
-                    }
-                    powerDr = powerDr / min * -1;
-                    powerSt = powerSt / min * -1;
-                    scissorDreapta.setPower(powerDr);
-                    scissorStanga.setPower(powerSt);
-                } else if (gamepad2.dpad_down) {
-                    scissorDreapta.setPower(0.6);
-                    scissorStanga.setPower(0.6);
-                } else if (gamepad2.left_bumper)
-                {
-                    scissorDreapta.setPower(0.2);
-                    scissorStanga.setPower(0.2);
-                } else {
-                    scissorDreapta.setPower(0);
-                    scissorStanga.setPower(0);
-                }
+                scissorDreapta.setPower(gamepad2.left_stick_y);
+                scissorStanga.setPower(gamepad2.left_stick_y);
 
                 /**set the collector motors on or off using the toggle*/
                 boolean abut = gamepad2.b;
@@ -105,6 +85,7 @@ public class TeleOp_Colect extends OpMode {
                         if (apoz2 && !endColect.isPressed()) {
                             motorColectSt.setPower(powerColect);
                             motorColectDr.setPower(-powerColect);
+                            servoclamp.setPosition(0.65);
                         } else {
                             motorColectSt.setPower(0);
                             motorColectDr.setPower(0);
@@ -118,7 +99,7 @@ public class TeleOp_Colect extends OpMode {
                     if (gamepad2.y) {
                         apoz3 = !apoz3;
                         if (apoz3) {
-                            servoclamp.setPosition(0.7);
+                            servoclamp.setPosition(0.65);
                         } else {
                             servoclamp.setPosition(1);
                         }
@@ -126,7 +107,7 @@ public class TeleOp_Colect extends OpMode {
                     alast3 = abut3;
                 }
 
-                powerSlider = -  gamepad2.left_stick_y;
+                powerSlider = gamepad2.right_stick_y;
                 if (powerSlider < 0) {
                     vexDr.setPosition(0.5 + powerSlider / 2);
                     vexSt.setPosition(0.5 - powerSlider / 2);
@@ -138,15 +119,16 @@ public class TeleOp_Colect extends OpMode {
                     vexSt.setPosition(0.5);
                 }
 
+
                 if (gamepad1.dpad_down) {
                     servoPlatformaDr.setPosition(0);
                     servoPlatformaSt.setPosition(1);
                 } else if (gamepad1.dpad_up) {
                     servoPlatformaDr.setPosition(1);
-                    servoPlatformaSt.setPosition(0);
+                    servoPlatformaSt.setPosition(0.5);
                 }
 
-                servoCapstone.setPosition((gamepad1.right_trigger + gamepad2.right_trigger)/2);
+                servoCapstone.setPosition((gamepad1.right_trigger + gamepad2.right_trigger) / 2);
 
             }
         }
@@ -197,6 +179,13 @@ public class TeleOp_Colect extends OpMode {
                 } else if (v == 2) {
                     POWER(df, sf, ds, ss);
                 }
+                if (gamepad1.x) {
+                    motorColectDr.setPower(-1);
+                }
+                if (gamepad1.y) {
+                    offsetDr = encScissorDr;
+                    offsetSt = encScissorSt;
+                }
             }
         }
     });
@@ -204,30 +193,31 @@ public class TeleOp_Colect extends OpMode {
     public Thread automation = new Thread(new Runnable() {
         @Override
         public void run() {
-           while (!stop){
-               if(endColect.isPressed()){
-                   apoz3 = false;
-                   servoclamp.setPosition(1);
-                   motorColectDr.setPower(0);
-                   motorColectSt.setPower(0);
-               }
-           }
-        }
-    });
-
-    private Thread scissorEncoders = new Thread(new Runnable()
-    {
-        long encoderScissorStanga, encoderScissorDreapta;
-        @Override
-        public void run() {
-            while (!stop){
-                encoderScissorDreapta = scissorDreapta.getCurrentPosition();
-                encoderScissorStanga = scissorStanga.getCurrentPosition();
-                encScissorDr = encoderScissorDreapta;
-                encScissorSt = encoderScissorStanga;
+            while (!stop) {
+                if (endColect.isPressed()) {
+                    apoz3 = false;
+                    servoclamp.setPosition(1);
+                    motorColectDr.setPower(0);
+                    motorColectSt.setPower(0);
+                }
             }
         }
     });
+
+    private Thread scissorEncoders = new Thread(new Runnable() {
+        long encoderScissorStanga, encoderScissorDreapta;
+
+        @Override
+        public void run() {
+            while (!stop) {
+                encoderScissorDreapta = scissorDreapta.getCurrentPosition();
+                encoderScissorStanga = scissorStanga.getCurrentPosition();
+                encScissorDr = encoderScissorDreapta - offsetDr;
+                encScissorSt = encoderScissorStanga - offsetSt;
+            }
+        }
+    });
+
     @Override
     public void init() {
         /**initialization motors*/
@@ -240,16 +230,16 @@ public class TeleOp_Colect extends OpMode {
         motorColectSt = hardwareMap.get(DcMotor.class, configs.colectStName);
 
         expansionHubEx = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub Sisteme");
-        scissorDreapta =  hardwareMap.dcMotor.get(configs.scissorDrName);
-        scissorStanga =  hardwareMap.dcMotor.get(configs.scissorStName);
+        scissorDreapta = hardwareMap.dcMotor.get(configs.scissorDrName);
+        scissorStanga = hardwareMap.dcMotor.get(configs.scissorStName);
 
         servoclamp = hardwareMap.servo.get("clamp");
         servoPlatformaDr = hardwareMap.servo.get("brDr");//TODO : redenumesti
         servoPlatformaSt = hardwareMap.servo.get("brSt");
         servoCapstone = hardwareMap.servo.get("capstone");
 
-        vexDr = hardwareMap.get(ServoImplEx.class,"vexDr");
-        vexSt = hardwareMap.get(ServoImplEx.class,"vexSt");
+        vexDr = hardwareMap.get(ServoImplEx.class, "vexDr");
+        vexSt = hardwareMap.get(ServoImplEx.class, "vexSt");
 
 
         endColect = hardwareMap.touchSensor.get("endColect");
@@ -278,7 +268,7 @@ public class TeleOp_Colect extends OpMode {
         motorsf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorss.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        servoclamp.setPosition(1);
+        // servoclamp.setPosition(1);
         servoCapstone.setPosition(0);
 
         /**start the thread*/
@@ -293,8 +283,8 @@ public class TeleOp_Colect extends OpMode {
      */
     @Override
     public void loop() {
-        telemetry.addData("EncDr",encScissorDr);
-        telemetry.addData("EncSt",encScissorSt);
+        telemetry.addData("EncDr", encScissorDr);
+        telemetry.addData("EncSt", encScissorSt);
         telemetry.addData("Capstone", gamepad1.right_trigger);
         telemetry.update();
     }
