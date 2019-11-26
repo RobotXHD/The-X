@@ -2,15 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.disnodeteam.dogecv.DogeCV;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Point;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
-import org.openftc.easyopencv.OpenCvWebcam;
 
 @Autonomous
 
@@ -19,7 +16,7 @@ public class AutoSkystone extends LinearOpMode {
     private int resWidth = 640, resHeight = 480;
     private Point p1 = new Point(0,0);
     private Point p2 = new Point(resHeight,resWidth);
-    private StoneDetectorModified stoneDetectorModified = new StoneDetectorModified(p1, p2);
+    private org.firstinspires.ftc.teamcode.StoneDetectorModified stoneDetectorModified = new org.firstinspires.ftc.teamcode.StoneDetectorModified(p1, p2);
 
     @Override
     public void runOpMode() {

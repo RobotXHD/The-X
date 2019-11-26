@@ -17,10 +17,10 @@ import static java.lang.Math.PI;
 public class HardwareSkybot_V2 extends LinearOpMode {
     public boolean startTh;
     public double encDr, encSt, encSp;
-    public RevBulkData bulkData;
-    public ExpansionHubMotor encoderDreapta, encoderSpate, encoderStanga;
-    public ExpansionHubEx expansionHub;
-    public ExpansionHubMotor motorss, motorsf, motords, motordf;
+        public RevBulkData bulkData;
+        public ExpansionHubMotor encoderDreapta, encoderSpate, encoderStanga;
+        public ExpansionHubEx expansionHub;
+        public ExpansionHubMotor motorss, motorsf, motords, motordf;
     public DcMotor motorColectSt, motorColectDr;
     public double encoderDrTotal = 0, encoderStTotal = 0, encoderSpTotal = 0;
     public double rotatie = 0, rotatieTotala = 0, delta = 0;
