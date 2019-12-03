@@ -145,9 +145,9 @@ public class TeleOp_Colect extends OpMode {
                     v = 2;
                 }
                 /**getting the gamepad joystick values*/
-                forward = gamepad1.left_stick_y;
-                right = -gamepad1.left_stick_x;
-                clockwise = gamepad1.right_stick_x;
+                forward = -gamepad1.left_stick_y;
+                right = gamepad1.left_stick_x;
+                clockwise = -gamepad1.right_stick_x;
 
 
                 /**calculating the power for motors */

@@ -336,11 +336,11 @@ public class AutonomEsuat extends LinearOpMode {
     }
 
     public double PID(double delta, double kp, double ki, double kd){
-        timeChange = System.currentTimeMillis() - lastTime;
+        timeChange = System.nanoTime() - lastTime;
         deltaSum += (delta * timeChange);
         dDelta = (delta - lastDelta);
         lastDelta = delta;
-        lastTime = System.currentTimeMillis();
+        lastTime = System.nanoTime();
         return kp * delta + ki * deltaSum + kd * dDelta;
     }
 }

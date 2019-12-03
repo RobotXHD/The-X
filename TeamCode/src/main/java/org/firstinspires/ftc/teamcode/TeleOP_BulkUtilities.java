@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.RevBulkData;
@@ -20,7 +21,7 @@ public class TeleOP_BulkUtilities extends OpMode {
     private ExpansionHubMotor motorss, motorsf, motords, motordf;
     private long encoderDrTotal,encoderStTotal, encoderSpTotal, rotatieTarget;
     private volatile double rotatie;
-    public double ticksPerDegree = 70.1445833333333333;
+    public double ticksPerDegree = 70.2335277777777;//70.1445833333333333
     private volatile long encDr, encSt, encSp;
     private volatile boolean stop = false;
 
@@ -36,7 +37,7 @@ public class TeleOP_BulkUtilities extends OpMode {
                 encDr = dr;
                 encSp = sp;
                 encSt = st;
-                rotatie = ((dr - st)/2)/ticksPerDegree;
+                rotatie = ((dr - st)/2.0)/ticksPerDegree;
             }
         }
     });
@@ -49,9 +50,9 @@ public class TeleOP_BulkUtilities extends OpMode {
         motorsf = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, configs.sfName);
         motordf = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, configs.dfName);
 
-        encoderDreapta = motordf;
+        encoderDreapta = motorss;
         encoderSpate = motorsf;
-        encoderStanga = motorss;
+        encoderStanga = motordf;
 
         motordf.setPower(0);
         motords.setPower(0);
@@ -68,10 +69,10 @@ public class TeleOP_BulkUtilities extends OpMode {
         motorsf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorss.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        motordf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motords.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorsf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorss.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motordf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motords.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorsf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorss.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motords.setDirection(DcMotorSimple.Direction.REVERSE);
         motordf.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -82,10 +83,10 @@ public class TeleOP_BulkUtilities extends OpMode {
 
     @Override
     public void loop() {
-        motordf.setPower(-gamepad1.right_stick_x);
-        motords.setPower(-gamepad1.right_stick_x);
-        motorsf.setPower(gamepad1.right_stick_x);
-        motorss.setPower(gamepad1.right_stick_x);
+        motordf.setPower(-gamepad1.right_stick_x/3);
+        motords.setPower(-gamepad1.right_stick_x/3);
+        motorsf.setPower(gamepad1.right_stick_x/3);
+        motorss.setPower(gamepad1.right_stick_x/3);
         telemetry.addData("EncoderDreapta", encDr);
         telemetry.addData("EncoderStanga", encSt);
         telemetry.addData("Rotatie", rotatie);
