@@ -75,16 +75,15 @@ public class DubiousTestRetard extends LinearOpMode {
         motordf.setDirection(DcMotorSimple.Direction.REVERSE);
 
         encoderRead.start();
-        PIDrotatie.start();
         while(!isStarted()){
             telemetry.addData("encDr", encDr);
             telemetry.addData("encSt", encSt);
             telemetry.addData("encSp", encSp);
             telemetry.update();
         }
-
         waitForStart();
-        pid = true;
+        PIDrotatie.start();
+        PIDrotatie2.start();
         while(!isStopRequested()){}
     }
     private Thread encoderRead = new Thread(new Runnable() {
@@ -99,11 +98,7 @@ public class DubiousTestRetard extends LinearOpMode {
                 encDr = dr;
                 encSp = sp;
                 encSt = st;
-                rotatie = ((dr - st)/2.0);
-                encDr = dr + rotatie;
-                encSp = sp;
-                encSt = st - rotatie;
-                rotatie/=ticksPerDegree;
+                rotatie = ((dr - st)/2.0)/ticksPerDegree;
             }
         }
     });
@@ -112,11 +107,14 @@ public class DubiousTestRetard extends LinearOpMode {
         @Override
         public void run() {
             while(!isStopRequested()){
-                if(pid){
+                if(configsDashboard.pid1){
                     deltaRotatie = configsDashboard.targetrotatie - rotatie;
                     startTimeRotatie = System.nanoTime();
                     timeChangeRotatie = (startTimeRotatie - lastTimeRotatie)/1000.0;
                     deltaSumRotatie += (deltaRotatie * timeChangeRotatie);
+                    if(deltaRotatie * deltaRotatie < 0.01){
+                        deltaSumRotatie = 0;
+                    }
                     dDeltaRotatie = (deltaRotatie - lastDeltaRotatie)/timeChangeRotatie;
                     lastDeltaRotatie = deltaRotatie;
                     lastTimeRotatie = startTimeRotatie;
@@ -128,8 +126,8 @@ public class DubiousTestRetard extends LinearOpMode {
                     packet.put("I Rotatie", configsDashboard.kir * deltaSumRotatie);
                     packet.put("P Rotatie", configsDashboard.kpr * deltaRotatie);
                     packet.put("PID Rotatie", powerRotatie);
-
-
+                    dashboard.sendTelemetryPacket(packet);
+/*
                     deltaTranslatie = configsDashboard.targetTranslatie - ((encSp+encDr)/2);
                     startTimeTranslatie = System.nanoTime();
                     timeChangeTranslatie = (startTimeTranslatie - lastDeltaTranslatie)/1000.0;
@@ -143,8 +141,33 @@ public class DubiousTestRetard extends LinearOpMode {
                     packet.put("I Translatie",configsDashboard.kit*deltaSumTranslatie);
                     packet.put("D Translatie",configsDashboard.kdt*dDeltaTranslatie);
                     packet.put("PID Translatie",powerTranslatie);
-                    dashboard.sendTelemetryPacket(packet);
+
                     sleep(5);
+
+ */
+                }
+            }
+        }
+    });
+
+    private Thread PIDrotatie2 = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            while(!isStopRequested()){
+                if(configsDashboard.pidzn){
+                    deltaRotatie = configsDashboard.targetrotatie - rotatie;
+                    startTimeRotatie = System.nanoTime();
+                    timeChangeRotatie = (startTimeRotatie - lastTimeRotatie)/1000.0;
+                    deltaSumRotatie += (deltaRotatie * timeChangeRotatie);
+                    dDeltaRotatie = (deltaRotatie - lastDeltaRotatie)/timeChangeRotatie;
+                    lastDeltaRotatie = deltaRotatie;
+                    lastTimeRotatie = startTimeRotatie;
+                    powerRotatie = configsDashboard.znkp * (deltaRotatie + configsDashboard.td * dDeltaRotatie);
+                    power(powerRotatie, powerRotatie, -powerRotatie, -powerRotatie);
+                    TelemetryPacket packet = new TelemetryPacket();
+                    packet.put("Delta Rotatie", deltaRotatie);
+                    packet.put("PID Rotatie", powerRotatie);
+                    dashboard.sendTelemetryPacket(packet);
                 }
             }
         }
