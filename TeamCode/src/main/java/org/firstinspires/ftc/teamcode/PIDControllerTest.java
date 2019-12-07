@@ -21,12 +21,14 @@ public class PIDControllerTest extends LinearOpMode {
     public ExpansionHubMotor encoderDreapta, encoderSpate, encoderStanga;
     public ExpansionHubEx expansionHub;
     public ExpansionHubMotor motorss, motorsf, motords, motordf;
-    public double rotatie = 0, ticksPerDegree = 70.4383556555;
+    public double rotatie = 0, ticksPerDegree = PIDControllerTestConfig.rotationCalib;
     public PIDControllerAdevarat pidRotatie = new PIDControllerAdevarat(0,0,0);
     public PIDControllerAdevarat pidY = new PIDControllerAdevarat(0,0,0);
+    public PIDControllerAdevarat pidX = new PIDControllerAdevarat(0,0,0);
     public double KPR = 0, KIR = 0, KDR = 0, SETPOINT = 0, correctionR;
     public double KPY = 0, KIY = 0, KDY = 0, SETPOINTY = 0, correctionY;
-    public double ds, df, ss, sf, Y;
+    public double KPX = 0, KIX = 0, KDX = 0, SETPOINTX = 0, correctionX;
+    public double ds, df, ss, sf, Y, tempRot, max;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -37,8 +39,8 @@ public class PIDControllerTest extends LinearOpMode {
         motordf = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, configs.dfName);
 
         encoderDreapta = motorss;
-        encoderSpate = motorsf;
-        encoderStanga = motordf;
+        encoderSpate = motordf;
+        encoderStanga = motorsf;
 
         motordf.setPower(0);
         motords.setPower(0);
@@ -67,45 +69,53 @@ public class PIDControllerTest extends LinearOpMode {
         waitForStart();
         pidRotatie.setSetpoint(0);
         pidY.setSetpoint(0);
+        pidX.setSetpoint(0);
         pidRotatie.enable();
         pidY.enable();
+        pidX.enable();
         while(!isStopRequested()){
-            if(KPR != PIDControllerTestConfig.p || KIR != PIDControllerTestConfig.i || KDR != PIDControllerTestConfig.d){
-                pidRotatie.setPID(PIDControllerTestConfig.p, PIDControllerTestConfig.i, PIDControllerTestConfig.d);
-                KPR = PIDControllerTestConfig.p;
-                KIR = PIDControllerTestConfig.i;
-                KDR = PIDControllerTestConfig.d;
-            }
-            if(SETPOINT != PIDControllerTestConfig.setpoint){
-                pidRotatie.setSetpoint(PIDControllerTestConfig.setpoint);
-                SETPOINT = PIDControllerTestConfig.setpoint;
-            }
-            if(KPY != PIDControllerTestConfig.py || KIY != PIDControllerTestConfig.iy || KDY != PIDControllerTestConfig.dy){
-                pidY.setPID(PIDControllerTestConfig.py, PIDControllerTestConfig.iy, PIDControllerTestConfig.dy);
-                KPY = PIDControllerTestConfig.py;
-                KIY = PIDControllerTestConfig.iy;
-                KDY = PIDControllerTestConfig.dy;
-            }
-            if(SETPOINTY != PIDControllerTestConfig.setpointY){
-                pidY.setSetpoint(PIDControllerTestConfig.setpointY);
-                SETPOINTY = PIDControllerTestConfig.setpointY;
-            }
+            pidRotatie.setPID(PIDControllerTestConfig.p, PIDControllerTestConfig.i, PIDControllerTestConfig.d);
+            pidRotatie.setSetpoint(PIDControllerTestConfig.setpoint);
+            pidY.setPID(PIDControllerTestConfig.py, PIDControllerTestConfig.iy, PIDControllerTestConfig.dy);
+            pidY.setSetpoint(PIDControllerTestConfig.setpointY);
+            pidX.setPID(PIDControllerTestConfig.px, PIDControllerTestConfig.ix, PIDControllerTestConfig.dx);
+            pidX.setSetpoint(PIDControllerTestConfig.setpointX);
+
             Y = (encDr + encSt)/2;
             correctionR = pidRotatie.performPID(rotatie);
             correctionY = pidY.performPID(Y);
-            ds = correctionR + correctionY;
-            df = correctionR + correctionY;
-            ss = -correctionR + correctionY;
-            sf = -correctionR + correctionY;
+            correctionX = pidX.performPID(encSp);
+            ds = correctionR + correctionY - correctionX;
+            df = correctionR + correctionY + correctionX;
+            ss = -correctionR + correctionY + correctionX;
+            sf = -correctionR + correctionY - correctionX;
+
+            max = Math.abs(ds);
+            max = Math.abs(df) > max ? Math.abs(df):max;
+            max = Math.abs(sf) > max ? Math.abs(sf):max;
+            max = Math.abs(ss) > max ? Math.abs(ss):max;
+            if(max > 1){
+                ds /= max;
+                df /= max;
+                sf /= max;
+                ss /= max;
+            }
+
             power(ds, df, ss, sf);
             TelemetryPacket packet = new TelemetryPacket();
-            packet.put("P", pidY.getP() * pidY.getError());
-            packet.put("I", pidY.getI() * pidY.getISum());
-            packet.put("D", pidY.getD() * pidY.getDError());
+            packet.put("P", pidX.getP() * pidX.getError());
+            packet.put("I", pidX.getI() * pidX.getISum());
+            packet.put("D", pidX.getD() * pidX.getDError());
             packet.put("PIDR", correctionR);
             packet.put("PIDY", correctionY);
+            packet.put("PIDX", correctionX);
             packet.put("ErrorY", pidY.getError());
             packet.put("Y", Y);
+            packet.put("encSp", encSp);
+            packet.put("encDr", encDr);
+            packet.put("encSt", encSt);
+            packet.put("tempRot", tempRot);
+            packet.put("rotationCalib", ticksPerDegree);
             dashboard.sendTelemetryPacket(packet);
         }
     }
@@ -115,13 +125,14 @@ public class PIDControllerTest extends LinearOpMode {
         public void run() {
             while(!isStopRequested()){
                 bulkData = expansionHub.getBulkInputData();
-                st = bulkData.getMotorCurrentPosition(encoderStanga);
-                sp = bulkData.getMotorCurrentPosition(encoderSpate);
+                st = -bulkData.getMotorCurrentPosition(encoderStanga);
+                sp = -bulkData.getMotorCurrentPosition(encoderSpate);
                 dr = bulkData.getMotorCurrentPosition(encoderDreapta);
-                rotatie = ((dr - st)/2.0)/ticksPerDegree;
-                encDr = dr + rotatie * ticksPerDegree;
-                encSp = sp;
-                encSt = st - rotatie * ticksPerDegree;
+                tempRot = ((dr - st)/2.0);
+                rotatie = tempRot/ticksPerDegree;
+                encDr = dr;
+                encSp = sp - rotatie * PIDControllerTestConfig.sidewaysCalib;
+                encSt = st;
             }
         }
     });
