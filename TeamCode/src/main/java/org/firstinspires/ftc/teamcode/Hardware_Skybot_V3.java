@@ -125,9 +125,9 @@ public class Hardware_Skybot_V3 extends LinearOpMode {
                 dr = bulkData.getMotorCurrentPosition(encoderDreapta);
                 tempRot = ((dr - st)/2.0);
                 rotatie = tempRot/ticksPerDegree;
-                encDr = dr;
+                encDr = dr + rotatie * ticksPerDegree;
                 encSp = sp - rotatie * PIDControllerTestConfig.sidewaysCalib;
-                encSt = st;
+                encSt = st - rotatie * ticksPerDegree;
             }
         }
     });

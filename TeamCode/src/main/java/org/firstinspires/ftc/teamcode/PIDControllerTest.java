@@ -76,6 +76,7 @@ public class PIDControllerTest extends LinearOpMode {
         while(!isStopRequested()){
             pidRotatie.setPID(PIDControllerTestConfig.p, PIDControllerTestConfig.i, PIDControllerTestConfig.d);
             pidRotatie.setSetpoint(PIDControllerTestConfig.setpoint);
+
             pidY.setPID(PIDControllerTestConfig.py, PIDControllerTestConfig.iy, PIDControllerTestConfig.dy);
             pidY.setSetpoint(PIDControllerTestConfig.setpointY);
             pidX.setPID(PIDControllerTestConfig.px, PIDControllerTestConfig.ix, PIDControllerTestConfig.dx);
@@ -130,9 +131,9 @@ public class PIDControllerTest extends LinearOpMode {
                 dr = bulkData.getMotorCurrentPosition(encoderDreapta);
                 tempRot = ((dr - st)/2.0);
                 rotatie = tempRot/ticksPerDegree;
-                encDr = dr;
-                encSp = sp - rotatie * PIDControllerTestConfig.sidewaysCalib;
-                encSt = st;
+                encDr = dr + rotatie *ticksPerDegree;
+                encSp = sp + rotatie;
+                encSt = st - rotatie *ticksPerDegree;
             }
         }
     });
