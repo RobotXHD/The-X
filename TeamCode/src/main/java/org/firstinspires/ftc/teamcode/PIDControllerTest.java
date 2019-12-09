@@ -131,9 +131,9 @@ public class PIDControllerTest extends LinearOpMode {
                 dr = bulkData.getMotorCurrentPosition(encoderDreapta);
                 tempRot = ((dr - st)/2.0);
                 rotatie = tempRot/ticksPerDegree;
-                encDr = dr + rotatie *ticksPerDegree;
-                encSp = sp + rotatie;
-                encSt = st - rotatie *ticksPerDegree;
+                encDr = dr + rotatie *ticksPerDegree ;
+                encSp = sp + rotatie * PIDControllerTestConfig.sidewaysCalib;
+                encSt = st - rotatie *ticksPerDegree ;
             }
         }
     });
