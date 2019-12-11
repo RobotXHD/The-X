@@ -14,10 +14,7 @@ public class AutoTest extends LinearOpMode {
        r.Init(hardwareMap);
        systime = System.currentTimeMillis();
        waitForStart();
-       r.miscare(PIDControllerTestConfig.setpointY,0,0);
-       while(systime + 1000 >  System.currentTimeMillis()){}
-       r.miscare(0,0,PIDControllerTestConfig.setpoint);
-       while(systime + 1000 > System.currentTimeMillis()){}
-
+       r.Y(PIDControllerTestConfig.setpointY);
+       sleep(1000);
     }
 }

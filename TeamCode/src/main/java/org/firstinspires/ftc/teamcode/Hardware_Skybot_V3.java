@@ -62,7 +62,7 @@ public class Hardware_Skybot_V3 extends LinearOpMode {
         motordf.setDirection(DcMotorSimple.Direction.REVERSE);
 
         if(startTh){
-            encoderReadRotatia.start();
+            encoderRead.start();
         }
         pidRotatie.setSetpoint(0);
         pidY.setSetpoint(0);
@@ -71,17 +71,26 @@ public class Hardware_Skybot_V3 extends LinearOpMode {
         pidY.enable();
         pidX.enable();
     }
+    private void power(double ds, double df, double ss, double sf) {
+        motordf.setPower(df);
+        motorss.setPower(ss);
+        motorsf.setPower(sf);
+        motords.setPower(ds);
+    }
+    @Override
+    public void runOpMode() throws InterruptedException {
+    }
 
-    public void miscare(double setPointY, double setPointX, double setPointRotatie){
+    public void Y(double setPointY){
+        while(!pidY.onTarget()){
         pidRotatie.setPID(PIDControllerTestConfig.p, PIDControllerTestConfig.i, PIDControllerTestConfig.d);
-        pidRotatie.setSetpoint(setPointRotatie);
-
+        pidRotatie.setSetpoint(0);
 
         pidY.setPID(PIDControllerTestConfig.py, PIDControllerTestConfig.iy, PIDControllerTestConfig.dy);
         pidY.setSetpoint(setPointY);
-
         pidX.setPID(PIDControllerTestConfig.px, PIDControllerTestConfig.ix, PIDControllerTestConfig.dx);
-        pidX.setSetpoint(setPointX);
+        pidX.setSetpoint(0);
+
         Y = (encDr + encSt)/2;
         correctionR = pidRotatie.performPID(rotatie);
         correctionY = pidY.performPID(Y);
@@ -101,51 +110,96 @@ public class Hardware_Skybot_V3 extends LinearOpMode {
             sf /= max;
             ss /= max;
         }
-
         power(ds, df, ss, sf);
+        }
+        power(0,0,0,0);
     }
-    private void power(double ds, double df, double ss, double sf) {
-        motordf.setPower(df);
-        motorss.setPower(ss);
-        motorsf.setPower(sf);
-        motords.setPower(ds);
-    }
-    @Override
-    public void runOpMode() throws InterruptedException {
 
+    public void Rotatie(double setPoint){
+        while(!pidRotatie.onTarget()){
+            pidRotatie.setPID(PIDControllerTestConfig.p, PIDControllerTestConfig.i, PIDControllerTestConfig.d);
+            pidRotatie.setSetpoint(setPoint);
+
+            pidY.setPID(PIDControllerTestConfig.py, PIDControllerTestConfig.iy, PIDControllerTestConfig.dy);
+            pidY.setSetpoint(0);
+            pidX.setPID(PIDControllerTestConfig.px, PIDControllerTestConfig.ix, PIDControllerTestConfig.dx);
+            pidX.setSetpoint(0);
+
+            Y = (encDr + encSt)/2;
+            correctionR = pidRotatie.performPID(rotatie);
+            correctionY = pidY.performPID(Y);
+            correctionX = pidX.performPID(encSp);
+            ds = correctionR + correctionY - correctionX;
+            df = correctionR + correctionY + correctionX;
+            ss = -correctionR + correctionY + correctionX;
+            sf = -correctionR + correctionY - correctionX;
+
+            max = Math.abs(ds);
+            max = Math.abs(df) > max ? Math.abs(df):max;
+            max = Math.abs(sf) > max ? Math.abs(sf):max;
+            max = Math.abs(ss) > max ? Math.abs(ss):max;
+            if(max > 1){
+                ds /= max;
+                df /= max;
+                sf /= max;
+                ss /= max;
+            }
+            power(ds, df, ss, sf);
+        }
+        power(0,0,0,0);
     }
-    private Thread encoderReadRotatia = new Thread(new Runnable() {
+
+    public void X (double setPointX){
+        while(!pidX.onTarget()){
+            pidRotatie.setPID(PIDControllerTestConfig.p, PIDControllerTestConfig.i, PIDControllerTestConfig.d);
+            pidRotatie.setSetpoint(0);
+
+            pidY.setPID(PIDControllerTestConfig.py, PIDControllerTestConfig.iy, PIDControllerTestConfig.dy);
+            pidY.setSetpoint(0);
+            pidX.setPID(PIDControllerTestConfig.px, PIDControllerTestConfig.ix, PIDControllerTestConfig.dx);
+            pidX.setSetpoint(setPointX);
+
+            Y = (encDr + encSt)/2;
+            correctionR = pidRotatie.performPID(rotatie);
+            correctionY = pidY.performPID(Y);
+            correctionX = pidX.performPID(encSp);
+            ds = correctionR + correctionY - correctionX;
+            df = correctionR + correctionY + correctionX;
+            ss = -correctionR + correctionY + correctionX;
+            sf = -correctionR + correctionY - correctionX;
+
+            max = Math.abs(ds);
+            max = Math.abs(df) > max ? Math.abs(df):max;
+            max = Math.abs(sf) > max ? Math.abs(sf):max;
+            max = Math.abs(ss) > max ? Math.abs(ss):max;
+            if(max > 1){
+                ds /= max;
+                df /= max;
+                sf /= max;
+                ss /= max;
+            }
+            power(ds, df, ss, sf);
+        }
+        power(0,0,0,0);
+    }
+
+
+
+
+    private Thread encoderRead = new Thread(new Runnable() {
         long st, dr, sp;
         @Override
         public void run() {
-            while(!isStopRequested()){
+            while (!isStopRequested()) {
                 bulkData = expansionHub.getBulkInputData();
                 st = -bulkData.getMotorCurrentPosition(encoderStanga);
                 sp = -bulkData.getMotorCurrentPosition(encoderSpate);
                 dr = bulkData.getMotorCurrentPosition(encoderDreapta);
-                tempRot = ((dr - st)/2.0);
-                rotatie = tempRot/ticksPerDegree;
+                tempRot = ((dr - st) / 2.0);
+                rotatie = tempRot / ticksPerDegree;
                 encDr = dr + rotatie * ticksPerDegree;
                 encSp = sp + rotatie * PIDControllerTestConfig.sidewaysCalib;
                 encSt = st - rotatie * ticksPerDegree;
-            }
-        }
-    });
-
-    private Thread encoderReadXY = new Thread(new Runnable() {
-        long st, dr, sp;
-        @Override
-        public void run() {
-            while(!isStopRequested()){
-                bulkData = expansionHub.getBulkInputData();
-                st = -bulkData.getMotorCurrentPosition(encoderStanga);
-                sp = -bulkData.getMotorCurrentPosition(encoderSpate);
-                dr = bulkData.getMotorCurrentPosition(encoderDreapta);
-                tempRot = ((dr - st)/2.0);
-                rotatie = tempRot/ticksPerDegree;
-                encDr = dr; //TODO: + rotatie*ticksPerDegree
-                encSp = sp - rotatie * PIDControllerTestConfig.sidewaysCalib;
-                encSt = st; //TODO: - rotatie*ticksPerDegree
             }
         }
     });
