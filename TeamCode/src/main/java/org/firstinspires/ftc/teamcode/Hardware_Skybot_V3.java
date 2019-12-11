@@ -62,7 +62,7 @@ public class Hardware_Skybot_V3 extends LinearOpMode {
         motordf.setDirection(DcMotorSimple.Direction.REVERSE);
 
         if(startTh){
-            encoderRead.start();
+            encoderReadRotatia.start();
         }
         pidRotatie.setSetpoint(0);
         pidY.setSetpoint(0);
@@ -114,7 +114,7 @@ public class Hardware_Skybot_V3 extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
     }
-    private Thread encoderRead = new Thread(new Runnable() {
+    private Thread encoderReadRotatia = new Thread(new Runnable() {
         long st, dr, sp;
         @Override
         public void run() {
@@ -126,9 +126,28 @@ public class Hardware_Skybot_V3 extends LinearOpMode {
                 tempRot = ((dr - st)/2.0);
                 rotatie = tempRot/ticksPerDegree;
                 encDr = dr + rotatie * ticksPerDegree;
-                encSp = sp - rotatie * PIDControllerTestConfig.sidewaysCalib;
+                encSp = sp + rotatie * PIDControllerTestConfig.sidewaysCalib;
                 encSt = st - rotatie * ticksPerDegree;
             }
         }
     });
+
+    private Thread encoderReadXY = new Thread(new Runnable() {
+        long st, dr, sp;
+        @Override
+        public void run() {
+            while(!isStopRequested()){
+                bulkData = expansionHub.getBulkInputData();
+                st = -bulkData.getMotorCurrentPosition(encoderStanga);
+                sp = -bulkData.getMotorCurrentPosition(encoderSpate);
+                dr = bulkData.getMotorCurrentPosition(encoderDreapta);
+                tempRot = ((dr - st)/2.0);
+                rotatie = tempRot/ticksPerDegree;
+                encDr = dr; //TODO: + rotatie*ticksPerDegree
+                encSp = sp - rotatie * PIDControllerTestConfig.sidewaysCalib;
+                encSt = st; //TODO: - rotatie*ticksPerDegree
+            }
+        }
+    });
+
 }
