@@ -25,6 +25,7 @@ public class Hardware_Skybot_V3 extends LinearOpMode {
     public double ds, df, ss, sf, Y, tempRot, max;
 
     public Hardware_Skybot_V3(boolean startThreads) {startTh = startThreads;}
+    public Hardware_Skybot_V3(){}
 
 
     public  void Init(HardwareMap hard){
@@ -67,9 +68,14 @@ public class Hardware_Skybot_V3 extends LinearOpMode {
         pidRotatie.setSetpoint(0);
         pidY.setSetpoint(0);
         pidX.setSetpoint(0);
+
         pidRotatie.enable();
         pidY.enable();
         pidX.enable();
+
+        pidRotatie.setPID(PIDControllerTestConfig.p, PIDControllerTestConfig.i, PIDControllerTestConfig.d);
+        pidY.setPID(PIDControllerTestConfig.py, PIDControllerTestConfig.iy, PIDControllerTestConfig.dy);
+        pidX.setPID(PIDControllerTestConfig.px, PIDControllerTestConfig.ix, PIDControllerTestConfig.dx);
     }
     private void power(double ds, double df, double ss, double sf) {
         motordf.setPower(df);
@@ -83,12 +89,8 @@ public class Hardware_Skybot_V3 extends LinearOpMode {
 
     public void Y(double setPointY){
         while(!pidY.onTarget()){
-        pidRotatie.setPID(PIDControllerTestConfig.p, PIDControllerTestConfig.i, PIDControllerTestConfig.d);
         pidRotatie.setSetpoint(0);
-
-        pidY.setPID(PIDControllerTestConfig.py, PIDControllerTestConfig.iy, PIDControllerTestConfig.dy);
         pidY.setSetpoint(setPointY);
-        pidX.setPID(PIDControllerTestConfig.px, PIDControllerTestConfig.ix, PIDControllerTestConfig.dx);
         pidX.setSetpoint(0);
 
         Y = (encDr + encSt)/2;
@@ -117,12 +119,9 @@ public class Hardware_Skybot_V3 extends LinearOpMode {
 
     public void Rotatie(double setPoint){
         while(!pidRotatie.onTarget()){
-            pidRotatie.setPID(PIDControllerTestConfig.p, PIDControllerTestConfig.i, PIDControllerTestConfig.d);
-            pidRotatie.setSetpoint(setPoint);
 
-            pidY.setPID(PIDControllerTestConfig.py, PIDControllerTestConfig.iy, PIDControllerTestConfig.dy);
+            pidRotatie.setSetpoint(setPoint);
             pidY.setSetpoint(0);
-            pidX.setPID(PIDControllerTestConfig.px, PIDControllerTestConfig.ix, PIDControllerTestConfig.dx);
             pidX.setSetpoint(0);
 
             Y = (encDr + encSt)/2;
@@ -150,13 +149,9 @@ public class Hardware_Skybot_V3 extends LinearOpMode {
     }
 
     public void X (double setPointX){
-        while(!pidX.onTarget()){
-            pidRotatie.setPID(PIDControllerTestConfig.p, PIDControllerTestConfig.i, PIDControllerTestConfig.d);
+        while(!pidX .onTarget()){
             pidRotatie.setSetpoint(0);
-
-            pidY.setPID(PIDControllerTestConfig.py, PIDControllerTestConfig.iy, PIDControllerTestConfig.dy);
             pidY.setSetpoint(0);
-            pidX.setPID(PIDControllerTestConfig.px, PIDControllerTestConfig.ix, PIDControllerTestConfig.dx);
             pidX.setSetpoint(setPointX);
 
             Y = (encDr + encSt)/2;
