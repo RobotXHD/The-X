@@ -22,12 +22,7 @@ public class PIDControllerAdevarat
     private double m_error = 0.0;
     private double m_result = 0.0;
 
-    /**
-     * Allocate a PID object with the given constants for P, I, D
-     * @param Kp the proportional coefficient
-     * @param Ki the integral coefficient
-     * @param Kd the derivative coefficient
-     */
+
     public double getDError(){
         return m_error - m_prevError;
     }
@@ -263,7 +258,7 @@ public class PIDControllerAdevarat
      */
     public boolean onTarget()
     {
-        return (Math.abs(m_error) < Math.abs(m_tolerance / 100.0 * (m_maximumInput - m_minimumInput)));
+        return (Math.abs(m_error) < Math.abs(m_tolerance));
     }
 
     /**

@@ -67,13 +67,19 @@ public class PIDControllerTest extends LinearOpMode {
 
         encoderRead.start();
         waitForStart();
+
         pidRotatie.setSetpoint(0);
         pidY.setSetpoint(0);
         pidX.setSetpoint(0);
+
         pidRotatie.enable();
         pidY.enable();
         pidX.enable();
         while(!isStopRequested()){
+            pidX.setTolerance(PIDControllerTestConfig.toleranceX);
+            pidRotatie.setTolerance(PIDControllerTestConfig.toleranceRotatie);
+            pidY.setTolerance(PIDControllerTestConfig.toleranceY);
+
             pidRotatie.setPID(PIDControllerTestConfig.p, PIDControllerTestConfig.i, PIDControllerTestConfig.d);
             pidRotatie.setSetpoint(PIDControllerTestConfig.setpoint);
 
@@ -117,6 +123,8 @@ public class PIDControllerTest extends LinearOpMode {
             packet.put("encSt", encSt);
             packet.put("tempRot", tempRot);
             packet.put("rotationCalib", ticksPerDegree);
+            packet.put("YonTarget",pidY.onTarget());
+            packet.put("RotatieonTarget",pidRotatie.onTarget());
             dashboard.sendTelemetryPacket(packet);
         }
     }
