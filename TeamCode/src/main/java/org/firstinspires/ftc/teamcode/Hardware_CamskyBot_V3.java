@@ -20,7 +20,6 @@ public class Hardware_CamskyBot_V3 extends LinearOpMode {
     private Point p2 = new Point(resHeight,resWidth);
     private org.firstinspires.ftc.teamcode.StoneDetectorModified stoneDetectorModified = new org.firstinspires.ftc.teamcode.StoneDetectorModified(p1, p2);
 
-
     public Hardware_CamskyBot_V3(){}
 
     public  void Init(HardwareMap hard) {
