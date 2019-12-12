@@ -14,6 +14,7 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 public class Hardware_CamskyBot_V3 extends LinearOpMode {
+
     private OpenCvCamera webcam;
     private int resWidth = 640, resHeight = 480;
     private Point p1 = new Point(0,0);
