@@ -92,6 +92,7 @@ public class PIDControllerTest extends LinearOpMode {
             correctionR = pidRotatie.performPID(rotatie);
             correctionY = pidY.performPID(Y);
             correctionX = pidX.performPID(encSp);
+
             ds = correctionR + correctionY - correctionX;
             df = correctionR + correctionY + correctionX;
             ss = -correctionR + correctionY + correctionX;
@@ -108,7 +109,7 @@ public class PIDControllerTest extends LinearOpMode {
                 ss /= max;
             }
 
-            power(ds, df, ss, sf);
+            //power(ds, df, ss, sf);
             TelemetryPacket packet = new TelemetryPacket();
             packet.put("P", pidX.getP() * pidX.getError());
             packet.put("I", pidX.getI() * pidX.getISum());

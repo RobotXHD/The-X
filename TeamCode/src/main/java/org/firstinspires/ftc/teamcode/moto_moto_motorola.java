@@ -6,37 +6,40 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.openftc.revextensions2.ExpansionHubEx;
+import org.openftc.revextensions2.ExpansionHubMotor;
+import org.openftc.revextensions2.RevBulkData;
+
 
 @TeleOp
-@Disabled
+
 public class moto_moto_motorola extends OpMode {
-    DcMotorEx motordf;
-    DcMotorEx motorsf;
-    DcMotorEx motords;
-    DcMotorEx motorss;
+    public RevBulkData bulkData;
+    public ExpansionHubEx expansionHub;
+    public ExpansionHubMotor motordf;
+    public PIDControllerAdevarat pid = new PIDControllerAdevarat(0,0,0);
+    public double correction;
+    public double df, encdf;
     @Override
     public void init() {
-        motordf = hardwareMap.get(DcMotorEx.class, "df");
-        motorsf = hardwareMap.get(DcMotorEx.class, "sf");
-        motorss = hardwareMap.get(DcMotorEx.class, "ss");
-        motords = hardwareMap.get(DcMotorEx.class, "ds");
-
-        motordf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motords.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorss.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorsf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
+        expansionHub = hardwareMap.get(ExpansionHubEx.class, configs.expansionHubOdometrieName);
+        motordf = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, configs.dfName);
+        motordf.setVelocity(0);
         motordf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motords.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorss.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorsf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        motordf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motordf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     @Override
-    public void loop() {
-        motords.setPower(gamepad1.right_stick_y);
-        motordf.setPower(gamepad1.right_stick_x);
-        motorss.setPower(gamepad1.left_stick_y);
-        motorsf.setPower(gamepad1.left_stick_x);
+    public void loop(){
+        encdf = bulkData.getMotorCurrentPosition(motordf);
+        pid.setTolerance(PIDControllerTestConfigTest.tolerance);
+        pid.setPID(PIDControllerTestConfigTest.p, PIDControllerTestConfigTest.i, PIDControllerTestConfigTest.d);
+        pid.setSetpoint(PIDControllerTestConfigTest.setpoint);
+
+        correction = pid.performPID(encdf);
+        motordf.setVelocity(correction);
     }
 }
