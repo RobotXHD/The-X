@@ -195,7 +195,7 @@ public class PIDControllerAdevarat
      */
     public void setOutputRange(double minimumOutput, double maximumOutput)
     {
-        m_minimumOutput = Math.abs(minimumOutput);
+        m_minimumOutput = -Math.abs(minimumOutput);
         m_maximumOutput = Math.abs(maximumOutput);
     }
 
