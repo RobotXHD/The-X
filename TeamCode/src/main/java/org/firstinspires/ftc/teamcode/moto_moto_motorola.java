@@ -33,22 +33,24 @@ public class moto_moto_motorola extends OpMode {
         motordf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motordf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motordf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //pid.setOutputRange(30000.0, -30000.0);
+        pid.setOutputRange(30000.0, -30000.0);
         pid.setTolerance(PIDControllerTestConfigTest.tolerance);
         pid.setPID(PIDControllerTestConfigTest.p, PIDControllerTestConfigTest.i, PIDControllerTestConfigTest.d);
         pid.setSetpoint(PIDControllerTestConfigTest.setpoint);
         pid.enable();
-
     }
 
     @Override
     public void loop(){
+        pid.setTolerance(PIDControllerTestConfigTest.tolerance);
+        pid.setPID(PIDControllerTestConfigTest.p, PIDControllerTestConfigTest.i, PIDControllerTestConfigTest.d);
+        pid.setSetpoint(PIDControllerTestConfigTest.setpoint);
         bulkData = expansionHub.getBulkInputData();
         encdf = bulkData.getMotorCurrentPosition(motordf);
         correction = pid.performPID(encdf);
-        motordf.setVelocity(correction*30000);
+        motordf.setVelocity(correction);
         TelemetryPacket telemetryPacket = new TelemetryPacket();
-        telemetryPacket.put("EncDr: ", df - PIDControllerTestConfigTest.setpoint);
+        telemetryPacket.put("EncDr: ", encdf - PIDControllerTestConfigTest.setpoint);
         telemetryPacket.put("P", pid.getP() * pid.getError());
         telemetryPacket.put("I", pid.getI() * pid.getISum());
         telemetryPacket.put("D", pid.getD() * pid.getDError());
