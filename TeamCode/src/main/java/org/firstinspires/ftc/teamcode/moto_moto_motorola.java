@@ -17,20 +17,17 @@ import org.openftc.revextensions2.RevBulkData;
 
 public class moto_moto_motorola extends OpMode {
     public FtcDashboard dashboard = FtcDashboard.getInstance();
-    public RevBulkData bulkData;
-    public ExpansionHubEx expansionHub;
-    public ExpansionHubMotor motordf;
+    public DcMotorEx motordf;
     public PIDControllerAdevarat pid = new PIDControllerAdevarat(0,0,0);
     public double correction;
     public double df, encdf;
     public boolean stop = false;
     @Override
     public void init() {
-        expansionHub = hardwareMap.get(ExpansionHubEx.class, configs.expansionHubOdometrieName);
-        motordf = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, configs.dfName);
+        motordf = hardwareMap.get(DcMotorEx.class, configs.dfName);
 
         motordf.setPower(0);
-        motordf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motordf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         motordf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motordf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -43,22 +40,15 @@ public class moto_moto_motorola extends OpMode {
     public void loop(){
         pid.setPID(PIDControllerTestConfigTest.p, PIDControllerTestConfigTest.i, PIDControllerTestConfigTest.d);
         pid.setSetpoint(PIDControllerTestConfigTest.setpoint);
-        bulkData = expansionHub.getBulkInputData();
-        encdf = bulkData.getMotorCurrentPosition(motordf);
+        encdf = motordf.getCurrentPosition();
         correction = pid.performPID(encdf);
-        if(correction > 1){
-            correction = 1;
-        }
-        else if(correction < -1){
-            correction = -1;
-        }
-        motordf.setPower(correction);
+        motordf.setVelocity(correction * 30000);
         TelemetryPacket telemetryPacket = new TelemetryPacket();
         telemetryPacket.put("EncDr: ", encdf - PIDControllerTestConfigTest.setpoint);
         telemetryPacket.put("P", pid.getP() * pid.getError());
         telemetryPacket.put("I", pid.getI() * pid.getISum());
         telemetryPacket.put("D", pid.getD() * pid.getDError());
-        telemetryPacket.put("PID", correction);
+        telemetryPacket.put("PID", correction * 30000);
         dashboard.sendTelemetryPacket(telemetryPacket);
     }
     @Override

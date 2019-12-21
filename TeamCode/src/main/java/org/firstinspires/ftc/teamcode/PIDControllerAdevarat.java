@@ -76,14 +76,8 @@ public class PIDControllerAdevarat
             // Set the current error to the previous error for the next cycle.
             m_prevError = m_error;
 
-            if (m_result < 0) sign = -1;    // Record sign of result.
-
             // Make sure the final result is within bounds. If we constrain the result, we make
             // sure the sign of the constrained result matches the original result sign.
-            if (Math.abs(m_result) > m_maximumOutput)
-                m_result = m_maximumOutput * sign;
-            else if (Math.abs(m_result) >    m_minimumOutput)
-                m_result = m_minimumOutput * sign;
         }
     }
 
