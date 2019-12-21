@@ -82,7 +82,7 @@ public class PIDControllerAdevarat
             // sure the sign of the constrained result matches the original result sign.
             if (Math.abs(m_result) > m_maximumOutput)
                 m_result = m_maximumOutput * sign;
-            else if (Math.abs(m_result) > m_minimumOutput)
+            else if (Math.abs(m_result) >    m_minimumOutput)
                 m_result = m_minimumOutput * sign;
         }
     }

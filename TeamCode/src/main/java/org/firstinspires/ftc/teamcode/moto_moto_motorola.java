@@ -29,12 +29,11 @@ public class moto_moto_motorola extends OpMode {
         expansionHub = hardwareMap.get(ExpansionHubEx.class, configs.expansionHubOdometrieName);
         motordf = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, configs.dfName);
 
-        motordf.setVelocity(0);
+        motordf.setPower(0);
         motordf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motordf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motordf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        pid.setOutputRange(30000.0, -30000.0);
-        pid.setTolerance(PIDControllerTestConfigTest.tolerance);
+
         pid.setPID(PIDControllerTestConfigTest.p, PIDControllerTestConfigTest.i, PIDControllerTestConfigTest.d);
         pid.setSetpoint(PIDControllerTestConfigTest.setpoint);
         pid.enable();
@@ -42,13 +41,18 @@ public class moto_moto_motorola extends OpMode {
 
     @Override
     public void loop(){
-        pid.setTolerance(PIDControllerTestConfigTest.tolerance);
         pid.setPID(PIDControllerTestConfigTest.p, PIDControllerTestConfigTest.i, PIDControllerTestConfigTest.d);
         pid.setSetpoint(PIDControllerTestConfigTest.setpoint);
         bulkData = expansionHub.getBulkInputData();
         encdf = bulkData.getMotorCurrentPosition(motordf);
         correction = pid.performPID(encdf);
-        motordf.setVelocity(correction);
+        if(correction > 1){
+            correction = 1;
+        }
+        else if(correction < -1){
+            correction = -1;
+        }
+        motordf.setPower(correction);
         TelemetryPacket telemetryPacket = new TelemetryPacket();
         telemetryPacket.put("EncDr: ", encdf - PIDControllerTestConfigTest.setpoint);
         telemetryPacket.put("P", pid.getP() * pid.getError());
@@ -57,7 +61,6 @@ public class moto_moto_motorola extends OpMode {
         telemetryPacket.put("PID", correction);
         dashboard.sendTelemetryPacket(telemetryPacket);
     }
-
     @Override
     public void stop() {
         stop = true;
