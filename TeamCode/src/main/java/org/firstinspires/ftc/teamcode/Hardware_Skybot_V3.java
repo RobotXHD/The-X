@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -181,9 +180,6 @@ public class Hardware_Skybot_V3 extends LinearOpMode {
         }while(verifications < PIDControllerTestConfig.targetVerifications);
         power(0,0,0,0);
     }
-
-
-
 
     private Thread encoderRead = new Thread(new Runnable() {
         long st, dr, sp;
