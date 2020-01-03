@@ -36,4 +36,5 @@ public class  configs {
     public static final String servoPlatformaStName = "PlatformaSt";
     public static final String touchGhearaName = "touchGheara";
 
+
 }

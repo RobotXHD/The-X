@@ -29,7 +29,7 @@ public class TeleOp_Colect extends OpMode {
     private DcMotorEx scissorDreapta;
     private DcMotorEx scissorStanga;
     private DcMotor motorColectSt, motorColectDr;
-    private Servo servoclamp, servoPlatformaSt, servoPlatformaDr, servoCapstone;
+    private Servo servoclamp, servoPlatformaSt, servoPlatformaDr, servoCapstone,servoParcare;
     private ServoImplEx vexSt, vexDr;
     /**
      * variable for changing the movement speed of the robot
@@ -59,8 +59,8 @@ public class TeleOp_Colect extends OpMode {
         public void run() {
             /**repeat until the program stops*/
             while (!stop) {
-                scissorDreapta.setPower(gamepad2.left_stick_y);
-                scissorStanga.setPower(gamepad2.left_stick_y);
+                scissorDreapta.setPower(-gamepad2.left_stick_y);
+                scissorStanga.setPower(-gamepad2.left_stick_y);
                 /**set the collector motors on or off using the toggle*/
                 boolean abut = gamepad2.b;
                 if (alast != abut) {
@@ -84,7 +84,7 @@ public class TeleOp_Colect extends OpMode {
                         if (apoz2 && !touchGheara.isPressed()) {
                             motorColectSt.setPower(powerColect);
                             motorColectDr.setPower(-powerColect);
-             //               servoclamp.setPosition(0.65);
+                   //         servoclamp.setPosition(0.65);
                         } else {
                             motorColectSt.setPower(0);
                             motorColectDr.setPower(0);
@@ -93,12 +93,12 @@ public class TeleOp_Colect extends OpMode {
                     alast2 = abut2;
                 }
 
-               /* boolean abut3 = gamepad2.y;
+                boolean abut3 = gamepad2.y;
                 if (alast3 != abut3) {
                     if (gamepad2.y) {
                         apoz3 = !apoz3;
                         if (apoz3) {
-                            servoclamp.setPosition(0.65);
+                            servoclamp.setPosition(0);
                         } else {
                             servoclamp.setPosition(1);
                         }
@@ -118,8 +118,7 @@ public class TeleOp_Colect extends OpMode {
                     vexSt.setPosition(0.5);
                 }
 
-
-               */ if (gamepad1.dpad_down) {
+                if (gamepad1.dpad_down) {
                     servoPlatformaDr.setPosition(0);
                     servoPlatformaSt.setPosition(1);
                 } else if (gamepad1.dpad_up) {
@@ -127,7 +126,7 @@ public class TeleOp_Colect extends OpMode {
                     servoPlatformaSt.setPosition(0.5);
                 }
 
-//                servoCapstone.setPosition((gamepad1.right_trigger + gamepad2.right_trigger) / 2);
+    //           servoCapstone.setPosition((gamepad1.right_trigger + gamepad2.right_trigger) / 2);
 
             }
         }
@@ -225,13 +224,14 @@ public class TeleOp_Colect extends OpMode {
         scissorDreapta = hardwareMap.get(DcMotorEx.class,configs.scissorDrName);
         scissorStanga = hardwareMap.get(DcMotorEx.class,configs.scissorStName);
 
-       // servoclamp = hardwareMap.servo.get("clamp");
+        servoclamp = hardwareMap.servo.get("clamp");
         servoPlatformaDr = hardwareMap.servo.get(configs.servoPlatformaDrName);
         servoPlatformaSt = hardwareMap.servo.get(configs.servoPlatformaStName);
-        //servoCapstone = hardwareMap.servo.get("capstone");
+        servoCapstone = hardwareMap.servo.get("capstone");
+        servoParcare = hardwareMap.servo.get("parcare");
 
-        //vexDr = hardwareMap.get(ServoImplEx.class, "vexDr");
-        //vexSt = hardwareMap.get(ServoImplEx.class, "vexSt");
+        vexDr = hardwareMap.get(ServoImplEx.class, "vexDr");
+        vexSt = hardwareMap.get(ServoImplEx.class, "vexSt");
 
 
         touchGheara= hardwareMap.touchSensor.get(configs.touchGhearaName);
@@ -242,8 +242,8 @@ public class TeleOp_Colect extends OpMode {
         scissorStanga.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
-       /* vexDr.setPwmRange(new PwmControl.PwmRange(1000, 2000));
-        vexSt.setPwmRange(new PwmControl.PwmRange(1000, 2000));*/
+        vexDr.setPwmRange(new PwmControl.PwmRange(1000, 2000));
+        vexSt.setPwmRange(new PwmControl.PwmRange(1000, 2000));
 
         /**set the mode of the motors*/
         scissorDreapta.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -260,9 +260,9 @@ public class TeleOp_Colect extends OpMode {
         motorsf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorss.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // servoclamp.setPosition(1);
-        //servoCapstone.setPosition(0);
-
+        servoclamp.setPosition(1);
+        servoCapstone.setPosition(0);
+        servoParcare.setPosition(0);
         /**start the thread*/
         Colect.start();
         Chassis.start();
@@ -270,9 +270,7 @@ public class TeleOp_Colect extends OpMode {
         //scissorEncoders.start();
     }
 
-    /**
-     * using the loop function to send the telemetry to the phone
-     */
+    /**using the loop function to send the telemetry to the phone */
     @Override
     public void loop() {
         telemetry.addData("Stay", "here");
