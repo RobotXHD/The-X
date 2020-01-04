@@ -53,7 +53,7 @@ public class TeleOp_Colect extends OpMode {
     private boolean stop;
     private boolean apoz = false, alast = true, apoz2 = false, alast2 = true, apoz3 = false, alast3 = true, eStrans = false;
     private double powerColect = 1, powerSlider;
-    private TouchSensor  touchScissorDr, touchScissorSt,touchGheara;
+    private TouchSensor  touchScissorDr, touchScissorSt, touchGheara;
 
     private Thread Colect = new Thread(new Runnable() {
         @Override
@@ -93,7 +93,7 @@ public class TeleOp_Colect extends OpMode {
                     }
                     alast2 = abut2;
                 }
-                if(touchGheara.isPressed() && motorColectDr.getPower() == 0){
+                if(touchGheara.isPressed() && motorColectDr.getPower() != 0){
                     servoclamp.setPosition(0);
                     motorColectSt.setPower(0);
                     motorColectDr.setPower(0);
