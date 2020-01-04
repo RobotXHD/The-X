@@ -43,6 +43,7 @@ public class TeleOp_Colect extends OpMode {
     private double ds;
     private double ss;
     private double max;
+    double pos = 0.1, sysTime;
     private long encScissorDr, encScissorSt, offsetDr = 0, offsetSt = 0;
     /**
      * variables for holding the gamepad joystick values;
@@ -50,8 +51,9 @@ public class TeleOp_Colect extends OpMode {
      */
     private double forward, right, clockwise;
     private boolean stop;
-    private boolean apoz = false, alast = true, apoz2 = false, alast2 = true, apoz3 = false, alast3 = true;
+    private boolean apoz = false, alast = true, apoz2 = false, alast2 = true, apoz3 = false, alast3 = true, eStrans = false;
     private double powerColect = 1, powerSlider;
+    private double timeout = 3000, registeredTime;
     private TouchSensor  touchScissorDr, touchScissorSt,touchGheara;
 
     private Thread Colect = new Thread(new Runnable() {
@@ -92,6 +94,15 @@ public class TeleOp_Colect extends OpMode {
                     }
                     alast2 = abut2;
                 }
+                if(touchGheara.isPressed()&& !eStrans && System.currentTimeMillis() > timeout + registeredTime ){
+                    servoclamp.setPosition(0);
+                    motorColectSt.setPower(0);
+                    motorColectDr.setPower(0);
+                    apoz = true;
+                    eStrans = true;
+                    registeredTime = System.currentTimeMillis();
+                }
+
 
                 boolean abut3 = gamepad2.y;
                 if (alast3 != abut3) {
@@ -99,8 +110,12 @@ public class TeleOp_Colect extends OpMode {
                         apoz3 = !apoz3;
                         if (apoz3) {
                             servoclamp.setPosition(0);
+                            eStrans = false;
+                            registeredTime = System.currentTimeMillis();
                         } else {
-                            servoclamp.setPosition(1);
+                            servoclamp.setPosition(0.6 );
+                            eStrans = false;
+                            registeredTime = System.currentTimeMillis();
                         }
                     }
                     alast3 = abut3;
@@ -126,13 +141,13 @@ public class TeleOp_Colect extends OpMode {
                     servoPlatformaSt.setPosition(0.5);
                 }
 
-    //           servoCapstone.setPosition((gamepad1.right_trigger + gamepad2.right_trigger) / 2);
+               servoCapstone.setPosition((gamepad1.right_trigger + gamepad2.right_trigger) / 2);
 
             }
         }
     });
 
-    private Thread Chassis = new Thread(new Runnable() {
+    private Thread Chassis = new Thread( new Runnable() {
         @Override
         public void run() {
             /**repeat until the program stops*/
@@ -220,7 +235,7 @@ public class TeleOp_Colect extends OpMode {
         motorColectDr = hardwareMap.get(DcMotor.class, configs.colectDrName);
         motorColectSt = hardwareMap.get(DcMotor.class, configs.colectStName);
 
-        expansionHubEx = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub Sisteme");
+        //expansionHubEx = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub Sisteme");
         scissorDreapta = hardwareMap.get(DcMotorEx.class,configs.scissorDrName);
         scissorStanga = hardwareMap.get(DcMotorEx.class,configs.scissorStName);
 
@@ -260,9 +275,9 @@ public class TeleOp_Colect extends OpMode {
         motorsf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorss.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        servoclamp.setPosition(1);
+        sysTime= System.currentTimeMillis();
+       // servoclamp.setPosition(1);
         servoCapstone.setPosition(0);
-        servoParcare.setPosition(0);
         /**start the thread*/
         Colect.start();
         Chassis.start();
@@ -273,7 +288,7 @@ public class TeleOp_Colect extends OpMode {
     /**using the loop function to send the telemetry to the phone */
     @Override
     public void loop() {
-        telemetry.addData("Stay", "here");
+        telemetry.addData("POZ", pos);
         telemetry.update();
       /*  telemetry.addData("EncDr", encScissorDr);
         telemetry.addData("EncSt", encScissorSt);
