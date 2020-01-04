@@ -53,7 +53,6 @@ public class TeleOp_Colect extends OpMode {
     private boolean stop;
     private boolean apoz = false, alast = true, apoz2 = false, alast2 = true, apoz3 = false, alast3 = true, eStrans = false;
     private double powerColect = 1, powerSlider;
-    private double timeout = 3000, registeredTime;
     private TouchSensor  touchScissorDr, touchScissorSt,touchGheara;
 
     private Thread Colect = new Thread(new Runnable() {
@@ -94,13 +93,11 @@ public class TeleOp_Colect extends OpMode {
                     }
                     alast2 = abut2;
                 }
-                if(touchGheara.isPressed()&& !eStrans && System.currentTimeMillis() > timeout + registeredTime ){
+                if(touchGheara.isPressed() && motorColectDr.getPower() == 0){
                     servoclamp.setPosition(0);
                     motorColectSt.setPower(0);
                     motorColectDr.setPower(0);
                     apoz = true;
-                    eStrans = true;
-                    registeredTime = System.currentTimeMillis();
                 }
 
 
@@ -110,12 +107,8 @@ public class TeleOp_Colect extends OpMode {
                         apoz3 = !apoz3;
                         if (apoz3) {
                             servoclamp.setPosition(0);
-                            eStrans = false;
-                            registeredTime = System.currentTimeMillis();
                         } else {
-                            servoclamp.setPosition(0.6 );
-                            eStrans = false;
-                            registeredTime = System.currentTimeMillis();
+                            servoclamp.setPosition(0.6);
                         }
                     }
                     alast3 = abut3;

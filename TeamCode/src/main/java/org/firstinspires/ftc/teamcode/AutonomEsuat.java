@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.disnodeteam.dogecv.DogeCV;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -18,10 +17,8 @@ import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.RevBulkData;
 
 import static java.lang.Math.PI;
-import static java.lang.Math.abs;
 
 @Autonomous
-@Disabled
 public class AutonomEsuat extends LinearOpMode {
     private OpenCvCamera webcam;
     private int resWidth = 800, resHeight = 448;
@@ -42,12 +39,8 @@ public class AutonomEsuat extends LinearOpMode {
     long timestamp, lastTimestamp, LAST;
     private ExpansionHubMotor motorss, motorsf, motords, motordf;
     double targetAngle = 0, targetDist, calculatedAngle, calcPower;
-    double kp = 6, ki = 0, kd = 27, kp2 = 0.0015;
+    double kp = 1, kp2 = 0.35;
     int direction;
-    boolean jumpDetected = false;
-    boolean jumpNeeded = false;
-    private double timeChange, lastTime, lastDelta, deltaSum, dDelta;
-
     private Thread Loc = new Thread(new Runnable() {
         long encSpVal, encDrVal, encStVal;
 
@@ -56,25 +49,20 @@ public class AutonomEsuat extends LinearOpMode {
             while (!isStopRequested()) {
                 bulkData = expansionHub.getBulkInputData();
                 encSpVal = bulkData.getMotorCurrentPosition(encoderSpate);
-                encDrVal = bulkData.getMotorCurrentPosition(encoderDreapta) + 10;
-                encStVal = bulkData.getMotorCurrentPosition(encoderStanga) + 10;
+                encDrVal = bulkData.getMotorCurrentPosition(encoderDreapta);
+                encStVal = bulkData.getMotorCurrentPosition(encoderStanga);
                 EncSp = -encSpVal;
-                EncSt = Math.round(-encStVal * 1.05);
+                EncSt = -encStVal;
                 EncDr = -encDrVal;
 
                 encRot = ((EncDr - EncSt) / 2.0);
-                robotHeading = Math.toRadians(encRot / tickPerDeg) % (2 * PI);
-                if(robotHeading < 0){
-                    robotHeading = 2 * PI + robotHeading;
-                }
-                if(robotHeading == 0){
-                    robotHeading = 2 * PI;
-                }
+                robotHeading = Math.toRadians(encRot / tickPerDeg) % (2 * PI); //TODO: De vazut daca functioneaza bine asta (ar trebui sa fie de la 0 la 2PI, si sa creasca gradual rotindu-se in sensul acelor de ceas 
+
                 lastCorrectedY = correctedY;
                 lastCorrectedX = correctedX;
 
                 correctedY = (EncSt + EncDr) / 2.0;
-                correctedX = EncSp + 0.8435451847031402522029576407934 * encRot;
+                correctedX = EncSp + 0.656 * encRot;
 
                 deltaY = correctedY - lastCorrectedY;
                 deltaX = correctedX - lastCorrectedX;
@@ -90,12 +78,10 @@ public class AutonomEsuat extends LinearOpMode {
         }
     });
 
-    public void rotatie(double X, double Y) {
-        jumpDetected = false;
-        jumpNeeded = false;
+    public void calcule(double X, double Y) {
+        boolean jumpDetected = false;
         double dx = X - currentX;
         double dy = Y - currentY;
-        double lastAngle, llastangle;
 
         if (dx > 0) {
             if (dy > 0) {
@@ -114,14 +100,9 @@ public class AutonomEsuat extends LinearOpMode {
                 calculatedAngle = 2*PI - (Math.atan(dx / dy) + PI);
             }
         }
-
         targetAngle = calculatedAngle - robotHeading;
-
-        if(targetAngle < -PI){
-            targetAngle = 2 * PI + targetAngle;
-        }
-
-        if(targetAngle < 0){
+        if(targetAngle > PI){
+            targetAngle = 2 * PI - targetAngle;
             direction = -1;
         }
         else{
@@ -129,119 +110,50 @@ public class AutonomEsuat extends LinearOpMode {
         }
         
         //targetDist = Math.sqrt((X - currentX) * (X - currentX) + (Y - currentY) * (Y - currentY));
-
-        lastAngle = targetAngle;
-        llastangle = targetAngle;
-        telemetry.addData("direction", direction);
-        telemetry.addData("target", targetAngle);
-        telemetry.update();
-        sleep(1000);
-        if(direction == 1){
-            while((targetAngle < -0.0006 || targetAngle > 0.0006) && (lastAngle < -0.0006 || lastAngle > 0.0006)){
-                telemetry.addData("EncDr", EncDr);
-                telemetry.addData("EncSt", EncSt);
-                telemetry.addData("EncSp", EncSp);
-                telemetry.addData("X", currentX);
-                telemetry.addData("Y", currentY);
-                telemetry.update();
-                lastAngle = llastangle;
-                llastangle = targetAngle;
+        if(direction == -1){
+            while(!jumpDetected || calculatedAngle - robotHeading <0){
+                if(lastRobotHeading < robotHeading){
+                    jumpDetected = true;
+                }//
                 targetAngle = calculatedAngle - robotHeading;
-
-                if(targetAngle < -PI){
-                    targetAngle = 2 * PI + targetAngle;
-                }
-                calcPower = PID(targetAngle, kp, ki, kd);
+                calcPower= -(targetAngle * kp); // cu +
                 if(calcPower > 1){
                     calcPower = 1;
                 }
-                power(calcPower, calcPower, -calcPower, -calcPower);
+                power(-calcPower, -calcPower, calcPower, calcPower);
+                telemetry.addData("targetAngle", targetAngle);
+                telemetry.update();
             }
         }
         else{
-            while((targetAngle < -0.0006 || targetAngle > 0.0006) && (lastAngle < -0.0006 || lastAngle > 0.0006)){
-                telemetry.addData("EncDr", EncDr);
-                telemetry.addData("EncSt", EncSt);
-                telemetry.addData("EncSp", EncSp);
-                telemetry.addData("X", currentX);
-                telemetry.addData("Y", currentY);
+            while(targetAngle < 0){
+                targetAngle = robotHeading + calculatedAngle;
+                calcPower= -(targetAngle * kp); // cu +
+                if(calcPower > 1){
+                    calcPower = 1;
+                }
+                power(-calcPower, -calcPower, calcPower, calcPower);
+                telemetry.addData("targetAngle", targetAngle);
                 telemetry.update();
-                lastAngle = llastangle;
-                llastangle = targetAngle;
-                targetAngle = calculatedAngle - robotHeading;
-
-                if(targetAngle < -PI){
-                    targetAngle = 2 * PI + targetAngle;
-                }
-                calcPower = -PID(-targetAngle, kp, ki, kd);
-                if(calcPower < -1){
-                    calcPower = -1;
-                }
-                power(calcPower, calcPower, -calcPower, -calcPower);
-
             }
         }
         power(0,0,0,0);
     }
 
 
-    private void miscare(double X, double Y) {
-        double powerCalc, current;
-        if(X > Y){
-            Y = X;
-            current = currentX;
-        }
-        else{
-            current = currentY;
-        }
-        if(current < Y){
-            while(current < Y-50){
-                powerCalc = (Y - current) * kp2;
-                /*if(powerCalc > 1){
-                    powerCalc = 1;
-                }
-
-                 */
-                current = X > Y ? currentX:currentY;
-                power(powerCalc,powerCalc,powerCalc,powerCalc);
-                telemetry.addData("EncDr", EncDr);
-                telemetry.addData("EncSt", EncSt);
-                telemetry.addData("EncSp", EncSp);
-                telemetry.addData("X", currentX);
-                telemetry.addData("Y", currentY);
-                telemetry.update();
+    private void miscare_fata(double targetY) {
+        double powerY;
+        while (currentY <= targetY) {
+            powerY = kp2 * (targetY - currentY);
+            if (powerY > 1) {
+                powerY = 1;
             }
-        }
-        else{
-            while(Y < current-50){
-                powerCalc = (Y - current) * kp2;
-                /*if(powerCalc > 1){
-                    powerCalc = 1;
-                }
-
-                 */
-                current = X > Y ? currentX:currentY;
-                power(powerCalc,powerCalc,powerCalc,powerCalc);
-                telemetry.addData("EncDr", EncDr);
-                telemetry.addData("EncSt", EncSt);
-                telemetry.addData("EncSp", EncSp);
-                telemetry.addData("X", currentX);
-                telemetry.addData("Y", currentY);
-                telemetry.update();
+            if (powerY < -1) {
+                powerY = -1;
             }
+            power(powerY, powerY, powerY, powerY);
         }
         power(0, 0, 0, 0);
-    }
-
-    public void trueMiscare(double X, double Y, int colectare){
-        rotatie(X, Y);
-        if(colectare == 1){
-
-        }
-        else if(colectare == -1){
-
-        }
-        miscare(X, Y);
     }
 
 
@@ -294,16 +206,15 @@ public class AutonomEsuat extends LinearOpMode {
         webcam.startStreaming(resWidth, resHeight, OpenCvCameraRotation.SIDEWAYS_LEFT);
         Loc.start();
 
+        //power(-0.3,-0.3,0.3,0.3); // se roteste cu minus
+
         while (!isStarted()) {
-            if (stoneDetectorModified.foundRectangles().get(0).y > 260) {
+            if (stoneDetectorModified.foundRectangles().get(0).y > 406) {
                 telemetry.addData("Skystone Position:", "LEFT");
-                telemetry.addData("Y", stoneDetectorModified.foundRectangles().get(0).y);
-            } else if (stoneDetectorModified.foundRectangles().get(0).y > 93) {
+            } else if (stoneDetectorModified.foundRectangles().get(0).y > 253) {
                 telemetry.addData("Skystone Position", "CENTER");
-                telemetry.addData("Y", stoneDetectorModified.foundRectangles().get(0).y);
             } else {
                 telemetry.addData("Skystone Position", "RIGHT");
-                telemetry.addData("Y", stoneDetectorModified.foundRectangles().get(0).y);
             }
             telemetry.addData("EncDr", EncDr);
             telemetry.addData("EncSt", EncSt);
@@ -311,21 +222,14 @@ public class AutonomEsuat extends LinearOpMode {
             telemetry.addData("X", currentX);
             telemetry.addData("Y", currentY);
             telemetry.addData("atan", calculatedAngle);
-            telemetry.addData("Robot Heading ", robotHeading);
+            telemetry.addData("Angle ", robotHeading);
             telemetry.addData("targetAngle", targetAngle);
-            telemetry.addData("Direction", direction);
-            telemetry.addData("Jump needed?", jumpNeeded);
             telemetry.addData("targetDistance", targetDist);
             telemetry.update();
         }
         waitForStart();
-        //rotatie(10000,0);
-        trueMiscare(0,500, 0);
-        trueMiscare(500,1000,1);
-        trueMiscare(0,500,0);
-        trueMiscare(-1500,500,0);
-        //trueMiscare(,500,0);
-        sleep(500);
+        //  calcule(10000,10000);
+        miscare_fata(1000);
     }
 
     private void power(double ds, double df, double ss, double sf) {
@@ -333,14 +237,5 @@ public class AutonomEsuat extends LinearOpMode {
         motorss.setPower(ss);
         motorsf.setPower(sf);
         motords.setPower(ds);
-    }
-
-    public double PID(double delta, double kp, double ki, double kd){
-        timeChange = System.nanoTime() - lastTime;
-        deltaSum += (delta * timeChange);
-        dDelta = (delta - lastDelta);
-        lastDelta = delta;
-        lastTime = System.nanoTime();
-        return kp * delta + ki * deltaSum + kd * dDelta;
     }
 }
