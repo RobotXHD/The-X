@@ -54,6 +54,7 @@ public class StoneDetectorModified extends DogeCVDetector {
     public List<Double> foundPozitionare(){
         return pozitieCub;
     }
+
     StoneDetectorModified(Point p1, Point p2) {
         detectorName = "Stone Detector";
         x = (int) Math.floor(p1.x);

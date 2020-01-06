@@ -17,19 +17,20 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
+import java.util.List;
 
 
 public class Hardware_Cam<ArrayList> extends LinearOpMode {
 
     private OpenCvCamera webcam;
     private int resWidth = 640, resHeight = 480;
-    private Point p1 = new Point(0,0);
+    private Point p1 = new Point(150,0);
     private Point p2 = new Point(resHeight,resWidth);
     public org.firstinspires.ftc.teamcode.StoneDetectorModified stoneDetectorModified = new org.firstinspires.ftc.teamcode.StoneDetectorModified(p1, p2);
 
     public Hardware_Cam(){}
 
-    public  void Init(HardwareMap hard) {
+    public void Init(HardwareMap hard) {
         stoneDetectorModified.stonesToFind = 1; 
         stoneDetectorModified.useDefaults();
         stoneDetectorModified.filter = new SkystoneDetector(p1, p2);

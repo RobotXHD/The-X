@@ -8,7 +8,6 @@ import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.RevBulkData;
 @TeleOp
-@Disabled
 public class BulkTest extends OpMode {
 
     private RevBulkData bulkData;

@@ -10,7 +10,7 @@ import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.RevBulkData;
 
-public class Hardware_Skybot_V3 extends LinearOpMode {
+public class  Hardware_Skybot_V3 extends LinearOpMode {
     public boolean startTh = false;
     public double encDr, encSt, encSp;
     public RevBulkData bulkData;
@@ -34,9 +34,9 @@ public class Hardware_Skybot_V3 extends LinearOpMode {
         motords = (ExpansionHubMotor) hard.get(DcMotorEx.class, configs.dsName);
         motorsf = (ExpansionHubMotor) hard.get(DcMotorEx.class, configs.sfName);
         motordf = (ExpansionHubMotor) hard.get(DcMotorEx.class, configs.dfName);
-
-        encoderDreapta = motorss;
-        encoderSpate = motordf;
+        //ss = spate; sf = stanga; df = dreapta
+        encoderDreapta = motordf ;
+        encoderSpate = motorss;
         encoderStanga = motorsf;
 
         motordf.setPower(0);
@@ -49,10 +49,18 @@ public class Hardware_Skybot_V3 extends LinearOpMode {
         motorsf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorss.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        encoderDreapta.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        encoderSpate.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        encoderStanga.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         motordf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motords.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorsf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorss.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        encoderSpate.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        encoderDreapta.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        encoderStanga.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motordf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motords.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

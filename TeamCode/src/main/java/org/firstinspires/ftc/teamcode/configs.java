@@ -21,10 +21,10 @@ public class  configs {
     public static final String dsName = "ds";
     public static final String sfName = "sf";
     public static final String ssName = "ss";
+    //ss = spate; sf = stanga; df = dreapta
 
-    //ss = stanga; sf = spate; df = drepta
-    public static final String encStName = "ss";
-    public static final String encSpName = "sf";
+    public static final String encStName = "sf";
+    public static final String encSpName = "ss";
     public static final String encDrName = "df";
 
     public static final String scissorDrName = "scissorDr";
@@ -35,6 +35,6 @@ public class  configs {
     public static final String servoPlatformaDrName = "PlatformaDr";
     public static final String servoPlatformaStName = "PlatformaSt";
     public static final String touchGhearaName = "touchGheara";
-
-
+    public static final String touchScissorDr = "touchScissorDr";
+    public static final String touchScissorSt = "touchScissorSt";
 }

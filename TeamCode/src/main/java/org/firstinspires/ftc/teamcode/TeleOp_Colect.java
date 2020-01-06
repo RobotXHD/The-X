@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,8 +11,6 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.openftc.revextensions2.ExpansionHubEx;
-import org.openftc.revextensions2.ExpansionHubMotor;
-import org.openftc.revextensions2.RevBulkData;
 
 import static java.lang.Math.abs;
 
@@ -43,7 +41,7 @@ public class TeleOp_Colect extends OpMode {
     private double ds;
     private double ss;
     private double max;
-    double pos = 0.1, sysTime;
+    private double sysTime;
     private long encScissorDr, encScissorSt, offsetDr = 0, offsetSt = 0;
     /**
      * variables for holding the gamepad joystick values;
@@ -108,7 +106,7 @@ public class TeleOp_Colect extends OpMode {
                         if (apoz3) {
                             servoclamp.setPosition(0);
                         } else {
-                            servoclamp.setPosition(0.6);
+                            servoclamp.setPosition(0.8);
                         }
                     }
                     alast3 = abut3;
@@ -164,14 +162,14 @@ public class TeleOp_Colect extends OpMode {
 
                 /**normalising the power values*/
                 max = abs(sf);
-                if (abs(df) > max) {
-                    max = abs(df);
-                }
-                if (abs(ss) > max) {
-                    max = abs(ss);
-                }
                 if (abs(ds) > max) {
                     max = abs(ds);
+                }
+                if (abs(df) > max) {
+                        max = abs(df);
+                }
+                if (abs(ss) > max) {
+                        max = abs(ss);
                 }
                 if (max > 1) {
                     sf /= max;
@@ -241,8 +239,9 @@ public class TeleOp_Colect extends OpMode {
         vexDr = hardwareMap.get(ServoImplEx.class, "vexDr");
         vexSt = hardwareMap.get(ServoImplEx.class, "vexSt");
 
-
         touchGheara= hardwareMap.touchSensor.get(configs.touchGhearaName);
+        touchScissorDr = hardwareMap.touchSensor.get(configs.touchScissorDr);
+        touchScissorSt = hardwareMap.touchSensor.get(configs.touchScissorSt);
 
         motords.setDirection(DcMotorSimple.Direction.REVERSE);
         motorss.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -281,24 +280,22 @@ public class TeleOp_Colect extends OpMode {
     /**using the loop function to send the telemetry to the phone */
     @Override
     public void loop() {
-        telemetry.addData("POZ", pos);
-        telemetry.update();
+
       /*  telemetry.addData("EncDr", encScissorDr);
         telemetry.addData("EncSt", encScissorSt);
-        telemetry.addData("Capstone", gamepad1.right_trigger);
-        telemetry.update();*/
+        telemetry.addData("Capstone", gamepad1.right_trigger);*/
+        telemetry.update();
     }
 
     /**
-     * using the stop function to stop the threads
+     using the stop function to stop the threads
      */
     public void stop() {
         stop = true;
     }
 
     /**
-     *
-     * the power function sets the motor's power
+     the power function sets the motor's power
      */
     public void POWER(double df1, double sf1, double ds1, double ss1) {
         motordf.setPower(df1);
