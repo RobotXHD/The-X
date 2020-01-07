@@ -20,14 +20,16 @@ public class PIDControllerTest extends LinearOpMode {
     public RevBulkData bulkData;
     public ExpansionHubMotor encoderDreapta, encoderSpate, encoderStanga;
     public ExpansionHubEx expansionHub;
-    public ExpansionHubMotor motorss, motorsf, motords, motordf;
+    public ExpansionHubMotor motorss, motorsf, motords, motordf, motorScissorDr, motorScissorSt;
     public double rotatie = 0, ticksPerDegree = PIDControllerTestConfig.rotationCalib;
     public PIDControllerAdevarat pidRotatie = new PIDControllerAdevarat(0,0,0);
     public PIDControllerAdevarat pidY = new PIDControllerAdevarat(0,0,0);
     public PIDControllerAdevarat pidX = new PIDControllerAdevarat(0,0,0);
+    public PIDControllerAdevarat pidScissor = new PIDControllerAdevarat(0,0,0);
     public double KPR = 0, KIR = 0, KDR = 0, SETPOINT = 0, correctionR;
     public double KPY = 0, KIY = 0, KDY = 0, SETPOINTY = 0, correctionY;
     public double KPX = 0, KIX = 0, KDX = 0, SETPOINTX = 0, correctionX;
+    public double correctionScissor;
     public double ds, df, ss, sf, Y, tempRot, max;
 
     @Override
@@ -92,9 +94,9 @@ public class PIDControllerTest extends LinearOpMode {
             pidX.setSetpoint(PIDControllerTestConfig.setpointX);
 
             Y = (encDr + encSt)/2;
-            //correctionR = -pidRotatie.performPID(rotatie);
-            //correctionY = -pidY.performPID(Y);
-            //correctionX = pidX.performPID(encSp);
+            correctionR = -pidRotatie.performPID(rotatie);
+            correctionY = -pidY.performPID(Y);
+            correctionX = pidX.performPID(encSp);
 
             ds = correctionR + correctionY - correctionX;
             df = correctionR + correctionY + correctionX;
@@ -145,9 +147,9 @@ public class PIDControllerTest extends LinearOpMode {
                 tempRot = ((dr - st)/2.0);
                 rotatie = tempRot/ticksPerDegree;
 
-                encDr = dr; //- tempRot;
-                encSp = sp;// + rotatie * PIDControllerTestConfig.sidewaysCalib;
-                encSt = st;//+ tempRot;
+                encDr = dr - tempRot;
+                encSp = sp - rotatie * PIDControllerTestConfig.sidewaysCalib;
+                encSt = st + tempRot;
             }
         }
     });

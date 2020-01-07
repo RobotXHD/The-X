@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -14,11 +15,15 @@ import org.openftc.revextensions2.ExpansionHubEx;
 
 import static java.lang.Math.abs;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+
 @TeleOp
 public class TeleOp_Colect extends OpMode {
     /**
      * declare the motors
      */
+    FtcDashboard dashboard = FtcDashboard.getInstance();
     private ExpansionHubEx expansionHubEx;
     private DcMotorEx motordf;
     private DcMotorEx motorsf;
@@ -58,8 +63,14 @@ public class TeleOp_Colect extends OpMode {
         public void run() {
             /**repeat until the program stops*/
             while (!stop) {
-                scissorDreapta.setPower(-gamepad2.left_stick_y);
-                scissorStanga.setPower(-gamepad2.left_stick_y);
+                if(touchScissorDr.isPressed()){
+                    scissorDreapta.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    scissorDreapta.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                }
+                if(touchScissorSt.isPressed()){
+                    scissorStanga.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    scissorStanga.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                }
                 /**set the collector motors on or off using the toggle*/
                 boolean abut = gamepad2.b;
                 if (alast != abut) {
@@ -200,21 +211,6 @@ public class TeleOp_Colect extends OpMode {
             }
         }
     });
-
-    private Thread scissorEncoders = new Thread(new Runnable() {
-        long encoderScissorStanga, encoderScissorDreapta;
-
-        @Override
-        public void run() {
-            while (!stop) {
-                encoderScissorDreapta = scissorDreapta.getCurrentPosition();
-                encoderScissorStanga = scissorStanga.getCurrentPosition();
-                encScissorDr = encoderScissorDreapta - offsetDr;
-                encScissorSt = encoderScissorStanga - offsetSt;
-            }
-        }
-    });
-
     @Override
     public void init() {
         /**initialization motors*/
@@ -253,8 +249,10 @@ public class TeleOp_Colect extends OpMode {
         vexSt.setPwmRange(new PwmControl.PwmRange(1000, 2000));
 
         /**set the mode of the motors*/
-        scissorDreapta.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        scissorStanga.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        scissorStanga.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        scissorStanga.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        scissorDreapta.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        scissorStanga.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motordf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motords.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorsf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -274,17 +272,11 @@ public class TeleOp_Colect extends OpMode {
         Colect.start();
         Chassis.start();
         //automation.start();
-        //scissorEncoders.start();
     }
 
     /**using the loop function to send the telemetry to the phone */
     @Override
     public void loop() {
-
-      /*  telemetry.addData("EncDr", encScissorDr);
-        telemetry.addData("EncSt", encScissorSt);
-        telemetry.addData("Capstone", gamepad1.right_trigger);*/
-        telemetry.update();
     }
 
     /**
