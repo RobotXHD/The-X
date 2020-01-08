@@ -42,7 +42,7 @@ public class SinCosAxeBulk extends OpMode {
     double lastCorrectedY = 0, lastCorrectedX = 0, correctedY = 0, correctedX = 0, deltaY, deltaX,sindeltay,sindeltax, cosdeltay,cosdeltax;
     double x, y, encRot;
     volatile double angle; // sens trigonometric +
-    double d = 377, omniLengthMm = 188.49555921538759430775860299677, mmPerTick = omniLengthMm / 4000, rotationCircleLenght = PI * d, tickPerDeg = (rotationCircleLenght / omniLengthMm / 360) * 4000;
+    double d = 377, omniLengthMm = 188.49555921538759430775860299677, mmPerTick = omniLengthMm / 4000, rotationCircleLenght = PI * d, tickPerDeg = PIDControllerTestConfig.rotationCalib;
     long EncSp, EncSt, EncDr, lastEncDr;
     boolean stop = false;
     volatile boolean encodereCitite = false;
@@ -105,10 +105,10 @@ public class SinCosAxeBulk extends OpMode {
                 if(!encodereCitite) {
                     bulkData = expansionHub.getBulkInputData();
                     encSpVal = bulkData.getMotorCurrentPosition(encoderSpate);
-                    encDrVal = bulkData.getMotorCurrentPosition(encoderDreapta);
-                    encStVal = bulkData.getMotorCurrentPosition(encoderStanga);
+                    encDrVal = -bulkData.getMotorCurrentPosition(encoderDreapta);
+                    encStVal = -bulkData.getMotorCurrentPosition(encoderStanga);
                     EncSp = encSpVal;
-                    EncSt = -encStVal;
+                    EncSt = encStVal;
                     EncDr = encDrVal;
                     encodereCitite = true;
                 }
@@ -130,6 +130,8 @@ public class SinCosAxeBulk extends OpMode {
                         y=0;
                     }
                     /**calculating the current heading in degrees*/
+                    lastAngle = angle;
+
                     encRot = ((EncDr - EncSt) / 2.0) - offset;
                     angle = Math.toRadians(encRot / tickPerDeg) % (2 * PI);
 
@@ -137,10 +139,11 @@ public class SinCosAxeBulk extends OpMode {
                     lastCorrectedX = correctedX;
 
                     correctedY = (EncSt + EncDr)/2.0;
-                    correctedX = EncSp + 0.656 * encRot;
+                    correctedX = EncSp - PIDControllerTestConfig.sidewaysCalib * encRot;
 
                     deltaY = correctedY - lastCorrectedY;
                     deltaX = correctedX - lastCorrectedX;
+                    correctedAngle = (lastAngle + angle)/2;
 
                     cosdeltay = (Math.cos(angle) * deltaY);
                     cosdeltax = (Math.cos((PI/2)- angle) * deltaX);

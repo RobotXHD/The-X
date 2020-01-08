@@ -15,9 +15,6 @@ import org.openftc.revextensions2.ExpansionHubEx;
 
 import static java.lang.Math.abs;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-
 @TeleOp
 public class TeleOp_Colect extends OpMode {
     /**
@@ -63,14 +60,9 @@ public class TeleOp_Colect extends OpMode {
         public void run() {
             /**repeat until the program stops*/
             while (!stop) {
-                if(touchScissorDr.isPressed()){
-                    scissorDreapta.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    scissorDreapta.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                }
-                if(touchScissorSt.isPressed()){
-                    scissorStanga.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    scissorStanga.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                }
+                scissorStanga.setPower(-gamepad2.left_stick_y);
+                scissorDreapta.setPower(-gamepad2.left_stick_y
+                );
                 /**set the collector motors on or off using the toggle*/
                 boolean abut = gamepad2.b;
                 if (alast != abut) {
@@ -140,7 +132,7 @@ public class TeleOp_Colect extends OpMode {
                     servoPlatformaSt.setPosition(1);
                 } else if (gamepad1.dpad_up) {
                     servoPlatformaDr.setPosition(1);
-                    servoPlatformaSt.setPosition(0.5);
+                    servoPlatformaSt.setPosition(0);
                 }
 
                servoCapstone.setPosition((gamepad1.right_trigger + gamepad2.right_trigger) / 2);
@@ -190,7 +182,7 @@ public class TeleOp_Colect extends OpMode {
                 }
                 /** setting the speed of the chassis*/
                 if (v == 1) {
-                    POWER(df / 2.5, sf / 2.5, ds / 2.5, ss / 2.5);
+                    POWER(df / 2.2, sf / 2.2, ds / 2.2, ss / 2.2);
                 } else if (v == 2) {
                     POWER(df, sf, ds, ss);
                 }
@@ -251,8 +243,8 @@ public class TeleOp_Colect extends OpMode {
         /**set the mode of the motors*/
         scissorStanga.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         scissorStanga.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        scissorDreapta.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        scissorStanga.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        scissorDreapta.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        scissorStanga.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motordf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motords.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorsf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

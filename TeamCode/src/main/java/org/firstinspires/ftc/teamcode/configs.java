@@ -6,11 +6,16 @@ public class  configs {
     public static final double pozitie_servorSj_minim = 0.08;
     public static final double pozitie_servoMonster_minim = 0.11;
     public static final double pozitie_servoClamp_minim = 0;
+    public static final double pozitie_servoPlatformaDr_minim = 0.33;
+    public static final double pozitie_servoPlatformaSt_minim = 0.97;
+
     //pozitii maxime
     public static final double pozitie_servoRot_maxim= 0.8;
     public static final double pozitie_servorSj_maxim = 0.71;
     public static final double pozitie_servoMonster_maxim = 0.86;
     public static final double pozitie_servoClamp_maxim = 0.26;
+    public static final double pozitie_servoPlatformaDr_maxim = 1;
+    public static final double pozitie_servoPlatformaSt_maxim = 0.61;
     //levii
     public static final int aMini = 120, aMaxi = 157;
     public static final int bMini = 162, bMaxi = 209;

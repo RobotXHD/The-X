@@ -110,7 +110,18 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
     public void gotoY(double incrementalY, double maxPow){
         totalY += incrementalY;
         verifications = 0;
+
+        pidY.enable();
+        pidX.enable();
+        pidRotatie.enable();
+
+        pidX.setSetpoint(totalX);
         pidY.setSetpoint(totalY);
+        pidRotatie.setSetpoint(totalRot);
+
+        pidX.setTolerance(PIDControllerTestConfig.toleranceX);
+        pidY.setTolerance(PIDControllerTestConfig.toleranceY);
+        pidRotatie.setTolerance(PIDControllerTestConfig.toleranceRotatie);
         do{
             Y = (encDr + encSt)/2;
             correctionR = -pidRotatie.performPID(Rotatie);
@@ -138,10 +149,65 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
         power(0,0,0,0);
     }
 
+    public void gotoY(double incrementalY, double maxPow, double tolerance){
+        totalY += incrementalY;
+        verifications = 0;
+
+        pidY.enable();
+        pidX.enable();
+        pidRotatie.enable();
+
+        pidX.setSetpoint(totalX);
+        pidY.setSetpoint(totalY);
+        pidRotatie.setSetpoint(totalRot);
+
+        pidX.setTolerance(PIDControllerTestConfig.toleranceX);
+        pidY.setTolerance(tolerance);
+        pidRotatie.setTolerance(PIDControllerTestConfig.toleranceRotatie);
+        do{
+            Y = (encDr + encSt)/2;
+            correctionR = -pidRotatie.performPID(Rotatie);
+            correctionY = -pidY.performPID(Y);
+            correctionX = pidX.performPID(encSp);
+            ds = correctionR + correctionY - correctionX;
+            df = correctionR + correctionY + correctionX;
+            ss = -correctionR + correctionY + correctionX;
+            sf = -correctionR + correctionY - correctionX;
+
+            max = Math.abs(ds);
+            max = Math.abs(df) > max ? Math.abs(df) : max;
+            max = Math.abs(sf) > max ? Math.abs(sf) : max;
+            max = Math.abs(ss) > max ? Math.abs(ss) : max;
+
+            if (max > maxPow) {
+                ds /= max;
+                df /= max;
+                sf /= max;
+                ss /= max;
+            }
+            power(ds, df, ss, sf);
+            verifications = pidY.onTarget() ? verifications + 1 : 0;
+        }while(verifications < PIDControllerTestConfig.targetVerifications);
+        power(0,0,0,0);
+    }
+
+
+
     public void rotatie(double incrementalRot, double maxPow){
         totalRot+=incrementalRot;
         verifications = 0;
+
+        pidY.enable();
+        pidX.enable();
+        pidRotatie.enable();
+
+        pidX.setSetpoint(totalX);
+        pidY.setSetpoint(totalY);
         pidRotatie.setSetpoint(totalRot);
+
+        pidX.setTolerance(PIDControllerTestConfig.toleranceX);
+        pidY.setTolerance(PIDControllerTestConfig.toleranceY);
+        pidRotatie.setTolerance(PIDControllerTestConfig.toleranceRotatie);
         do{
             Y = (encDr + encSt)/2;
             correctionR = -pidRotatie.performPID(Rotatie);
@@ -168,10 +234,64 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
         power(0,0,0,0);
     }
 
+    public void rotatie(double incrementalRot, double maxPow, double tolerance){
+        totalRot+=incrementalRot;
+        verifications = 0;
+
+        pidY.enable();
+        pidX.enable();
+        pidRotatie.enable();
+
+        pidX.setSetpoint(totalX);
+        pidY.setSetpoint(totalY);
+        pidRotatie.setSetpoint(totalRot);
+
+        pidX.setTolerance(PIDControllerTestConfig.toleranceX);
+        pidY.setTolerance(PIDControllerTestConfig.toleranceY);
+        pidRotatie.setTolerance(tolerance);
+        do{
+            Y = (encDr + encSt)/2;
+            correctionR = -pidRotatie.performPID(Rotatie);
+            correctionY = -pidY.performPID(Y);
+            correctionX = pidX.performPID(encSp);
+            ds = correctionR + correctionY - correctionX;
+            df = correctionR + correctionY + correctionX;
+            ss = -correctionR + correctionY + correctionX;
+            sf = -correctionR + correctionY - correctionX;
+
+            max = Math.abs(ds);
+            max = Math.abs(df) > max ? Math.abs(df):max;
+            max = Math.abs(sf) > max ? Math.abs(sf):max;
+            max = Math.abs(ss) > max ? Math.abs(ss):max;
+            if(max > maxPow){
+                ds /= max;
+                df /= max;
+                sf /= max;
+                ss /= max;
+            }
+            power(ds, df, ss, sf);
+            verifications = pidRotatie.onTarget() ? verifications+1 : 0;
+        }while (verifications < PIDControllerTestConfig.targetVerifications);
+        power(0,0,0,0);
+    }
+
+
+
     public void gotoX(double incrementalX, double maxPow){
         totalX += incrementalX;
         verifications = 0;
+
+        pidY.enable();
+        pidX.enable();
+        pidRotatie.enable();
+
         pidX.setSetpoint(totalX);
+        pidY.setSetpoint(totalY);
+        pidRotatie.setSetpoint(totalRot);
+
+        pidX.setTolerance(PIDControllerTestConfig.toleranceX);
+        pidY.setTolerance(PIDControllerTestConfig.toleranceY);
+        pidRotatie.setTolerance(PIDControllerTestConfig.toleranceRotatie);
         do{
             Y = (encDr + encSt)/2;
             correctionR = -pidRotatie.performPID(Rotatie);
@@ -198,6 +318,109 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
         power(0,0,0,0);
     }
 
+    public void gotoX(double incrementalX, double maxPow, double tolerance){
+        totalX += incrementalX;
+        verifications = 0;
+
+        pidY.enable();
+        pidX.enable();
+        pidRotatie.enable();
+
+        pidX.setSetpoint(totalX);
+        pidY.setSetpoint(totalY);
+        pidRotatie.setSetpoint(totalRot);
+
+        pidX.setTolerance(tolerance);
+        pidY.setTolerance(PIDControllerTestConfig.toleranceY);
+        pidRotatie.setTolerance(PIDControllerTestConfig.toleranceRotatie);
+        do{
+            Y = (encDr + encSt)/2;
+            correctionR = -pidRotatie.performPID(Rotatie);
+            correctionY = -pidY.performPID(Y);
+            correctionX = pidX.performPID(encSp);
+            ds = correctionR + correctionY - correctionX;
+            df = correctionR + correctionY + correctionX;
+            ss = -correctionR + correctionY + correctionX;
+            sf = -correctionR + correctionY - correctionX;
+
+            max = Math.abs(ds);
+            max = Math.abs(df) > max ? Math.abs(df):max;
+            max = Math.abs(sf) > max ? Math.abs(sf):max;
+            max = Math.abs(ss) > max ? Math.abs(ss):max;
+            if(max > maxPow){
+                ds /= max;
+                df /= max;
+                sf /= max;
+                ss /= max;
+            }
+            power(ds, df, ss, sf);
+            verifications = pidX.onTarget() ? verifications+1 : 0;
+        }while(verifications < PIDControllerTestConfig.targetVerifications);
+        power(0,0,0,0);
+    }
+
+
+
+
+    public void alinierePlaca(double incrementalY, double power){
+        pidY.disable();
+        pidX.enable();
+        pidRotatie.enable();
+        totalY+=incrementalY;
+        do{
+            Y = (encDr + encSt)/2;
+            correctionR = -pidRotatie.performPID(Rotatie);
+            correctionX = pidX.performPID(encSp);
+            ds = correctionR + power - correctionX;
+            df = correctionR + power + correctionX;
+            ss = -correctionR + power + correctionX;
+            sf = -correctionR + power - correctionX;
+
+            max = Math.abs(ds);
+            max = Math.abs(df) > max ? Math.abs(df):max;
+            max = Math.abs(sf) > max ? Math.abs(sf):max;
+            max = Math.abs(ss) > max ? Math.abs(ss):max;
+            if(max > 1){
+                ds /= max;
+                df /= max;
+                sf /= max;
+                ss /= max;
+            }
+            power(ds, df, ss, sf);
+        }while(Y > totalY + 100 || Y < totalY - 100);
+        power(0,0,0,0);
+    }
+
+    public void rotatiePlaca(double rotatie, int power){
+        totalRot+=rotatie;
+
+        pidY.enable();
+        pidX.enable();
+        pidRotatie.disable();
+
+        do{
+            Y = (encDr + encSt)/2;
+            correctionY = -pidY.performPID(Y);
+            correctionX = pidX.performPID(encSp);
+            ds = power + correctionY - correctionX;
+            df = power + correctionY + correctionX;
+            ss = -power + correctionY + correctionX;
+            sf = -power + correctionY - correctionX;
+
+            max = Math.abs(ds);
+            max = Math.abs(df) > max ? Math.abs(df):max;
+            max = Math.abs(sf) > max ? Math.abs(sf):max;
+            max = Math.abs(ss) > max ? Math.abs(ss):max;
+            if(max > 1){
+                ds /= max;
+                df /= max;
+                sf /= max;
+                ss /= max;
+            }
+            power(ds, df, ss, sf);
+        }while(Rotatie > totalRot + 2 || Rotatie < totalRot - 2);
+    }
+
     private Thread encoderRead = new Thread(new Runnable() {
         long st, dr, sp;
         @Override
@@ -221,21 +444,27 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
         motorColectSt.setPower(-1);
     }
     public void stopColect(){
-        motorColectDr.setPower(0.3);
-        motorColectSt.setPower(-0.3);
+        motorColectDr.setPower(0);
+        motorColectSt.setPower(0);
     }
     public void startColectReverse(){
         motorColectDr.setPower(-1);
         motorColectSt.setPower(1);
     }
+    public void Colect(double power){
+        motorColectDr.setPower(power);
+        motorColectSt.setPower(-power);
+    }
+
     public void prindrePlate(){
         servoPlatformaDr.setPosition(0);
         servoPlatformaSt.setPosition(1);
     }
 
+
     public void desprindrePlate(){
-        servoPlatformaDr.setPosition(0.8);
-        servoPlatformaSt.setPosition(0.2);
+        servoPlatformaDr.setPosition(1);
+        servoPlatformaSt.setPosition(0);
     }
 
     public void moveScissor(int target){

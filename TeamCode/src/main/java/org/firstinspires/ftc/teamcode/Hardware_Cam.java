@@ -43,6 +43,9 @@ public class Hardware_Cam<ArrayList> extends LinearOpMode {
     public void startDetection(){
         webcam.startStreaming(resWidth, resHeight);
     }
+    public void stopDetection(){
+        webcam.stopStreaming();
+    }
     @Override
     public void runOpMode() {
 
