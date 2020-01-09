@@ -53,7 +53,7 @@ public class AutoTestRed extends LinearOpMode {
             r.alinierePlaca(-5000,0.3);
             r.prindrePlate();
             r.startColectReverse();
-            sleep(1000);
+            sleep(1500);
             r.Colect(-0.3);
             r.gotoX(14000,1,250);
             r.gotoX(-2000,1,250);
@@ -65,9 +65,9 @@ public class AutoTestRed extends LinearOpMode {
             rotatie-=90;
             r.pidRotatie.setSetpoint(rotatie);
             r.stopColect();
-            r.gotoX(-2000,1);
+            r.gotoX(-2500,1);
             r.gotoY(35500, 1);
-            r.gotoX(10000,1);
+            r.gotoX(10500,1);
             r.gotoX(-3100,1);
             r.startColect();
             r.gotoY(5000,1);
@@ -104,7 +104,7 @@ public class AutoTestRed extends LinearOpMode {
             r.alinierePlaca(-5000,0.3);
             r.prindrePlate();
             r.startColectReverse();
-            cam.stopDetection();
+            sleep(1500);
             r.Colect(-0.3);
             r.gotoX(14000,1,250);
             r.gotoX(-2000,1,250);
@@ -116,14 +116,14 @@ public class AutoTestRed extends LinearOpMode {
             rotatie-=90;
             r.pidRotatie.setSetpoint(rotatie);
             r.stopColect();
-            r.gotoX(-2000,1);
-            r.gotoY(47500, 1);
+            r.gotoX(-2500,1);
+            r.gotoY(48000, 1);
             r.rotatie(180,1);
-            r.gotoX(-6900,1);
+            r.gotoX(-7400,1);
             r.startColect();
             r.gotoY(5000,1);
             r.Colect(0.3);
-            r.gotoX(7000,1);
+            r.gotoX(7400,1);
             r.gotoY(30000,1);
             r.startColectReverse();
             r.gotoY(-10000,1);
@@ -154,7 +154,7 @@ public class AutoTestRed extends LinearOpMode {
             r.alinierePlaca(-5000,0.3);
             r.prindrePlate();
             r.startColectReverse();
-            sleep(1000);
+            sleep(1500);
             r.Colect(-0.3);
             r.gotoX(14000,1,250);
             r.gotoX(-2000,1,250);
@@ -166,7 +166,7 @@ public class AutoTestRed extends LinearOpMode {
             rotatie-=90;
             r.pidRotatie.setSetpoint(rotatie);
             r.stopColect();
-            r.gotoX(-4500,1);
+            r.gotoX(-5000,1);
             r.gotoY(26000, 1);
             r.rotatie(-45,1);
             r.startColect();
