@@ -387,7 +387,7 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
                 ss /= max;
             }
             power(ds, df, ss, sf);
-        }while(Y > totalY + 100 || Y < totalY - 100);
+        }while(Y > totalY + 250 || Y < totalY - 250);
         power(0,0,0,0);
     }
 

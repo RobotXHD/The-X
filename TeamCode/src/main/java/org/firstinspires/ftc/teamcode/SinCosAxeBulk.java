@@ -40,7 +40,7 @@ public class SinCosAxeBulk extends OpMode {
      * we don't want to access them too many times in a loop */
     private double forward, right, clockwise, tempforward, tempright;
     double lastCorrectedY = 0, lastCorrectedX = 0, correctedY = 0, correctedX = 0, deltaY, deltaX,sindeltay,sindeltax, cosdeltay,cosdeltax;
-    double x, y, encRot;
+    double x, y, encRot, lastAngle, correctedAngle;
     volatile double angle; // sens trigonometric +
     double d = 377, omniLengthMm = 188.49555921538759430775860299677, mmPerTick = omniLengthMm / 4000, rotationCircleLenght = PI * d, tickPerDeg = PIDControllerTestConfig.rotationCalib;
     long EncSp, EncSt, EncDr, lastEncDr;

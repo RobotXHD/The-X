@@ -148,7 +148,7 @@ public class TeleOp_ChassisV3 extends OpMode {
         telemetry.addData("EncDr", EncDr);
         telemetry.addData("EncSt", EncSt);
         telemetry.addData("EncSp", EncSp);
-        telemetry.addData("Y: ",-gamepad1.left_stick_y);
+      telemetry.addData("Y: ",-gamepad1.left_stick_y);
         telemetry.addData("ErrorDr: ",errorDr * kpf);
         telemetry.addData("ErrorSt: ",errorSt * kpf);
         //telemetry.addData("ErrorSp: ",errorSideways);

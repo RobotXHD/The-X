@@ -17,11 +17,11 @@ public class AutoTestRed extends LinearOpMode {
         while (!isStarted()){
             telemetry.addData("X:", cam.stoneDetectorModified.foundScreenPositions().get(0).x);
             telemetry.addData("Y:", cam.stoneDetectorModified.foundScreenPositions().get(0).y);
-            if(cam.stoneDetectorModified.foundScreenPositions().get(0).y>143){
+            if(cam.stoneDetectorModified.foundScreenPositions().get(0).y>226){
                 telemetry.addData("Position", "LEFT");
                 caz = -1;
             }
-            else if(cam.stoneDetectorModified.foundScreenPositions().get(0).y>32){
+            else if(cam.stoneDetectorModified.foundScreenPositions().get(0).y>75){
                 telemetry.addData("Position", "CENTER");
                 caz = 0;
             }
@@ -41,45 +41,106 @@ public class AutoTestRed extends LinearOpMode {
         waitForStart();
        // cam.stopDetection();
         if(caz == -1){
-            r.gotoY(3000,1);
+            r.gotoY(3500,1);
             r.rotatie(45,1);
             r.startColect();
-            r.gotoY(20000,1);
+            r.gotoY(20020,1);
             r.Colect(0.3);
-            r.gotoY(-7273,1);
+            r.gotoY(-8000,1);
             r.rotatie(45,1);
-            r.gotoY(-54000,1);
+            r.gotoY(-53500,1);
             r.rotatie(90,1);
-            r.alinierePlaca(-4500,0.2);
+            r.alinierePlaca(-5000,0.3);
             r.prindrePlate();
             r.startColectReverse();
             sleep(1000);
             r.Colect(-0.3);
-            r.gotoX(12000,1,250);
+            r.gotoX(14000,1,250);
             r.gotoX(-2000,1,250);
             rotatie = r.totalRot;
             r.rotatie(-90,1,10);
-            r.gotoY(-5000,1);
+            r.gotoY(-7000,1);
             r.desprindrePlate();
             sleep(1000);
             rotatie-=90;
             r.pidRotatie.setSetpoint(rotatie);
-            r.gotoX(-5000,1);
-            r.gotoY(35000, 1);
-            r.rotatie(-45,1);
-            r.startColect();
-            r.gotoY(8000,1);
-            r.Colect(0.3);
-            r.gotoY(-8000,1);
-            r.rotatie(-135,1);
+            r.stopColect();
             r.gotoX(-2000,1);
-            r.gotoY(24000,1);
+            r.gotoY(35500, 1);
+            r.gotoX(10000,1);
+            r.gotoX(-3100,1);
+            r.startColect();
+            r.gotoY(5000,1);
+            r.Colect(0.3);
+            r.gotoX(-7900, 1);
+            r.rotatie(-180,1);
+            r.gotoY(25000,1);
             r.startColectReverse();
             r.gotoY(-10000,1);
-        }
-        else if(caz == 0){
+            /*r.startColect();
+            r.gotoY(12000,1);
+            r.Colect(0.3);
+            r.gotoY(-12000,1);
+            r.rotatie(-135,1);
+            r.gotoX(-2000,1);
+            r.gotoY(22500.0,1);
+            r.startColectReverse();
+            r.gotoY(-11000,1);
 
+             */
         }
+
+
+        else if(caz == 0){
+            r.gotoY(7750, 1);
+            r.rotatie(45,1);
+            r.startColect();
+            r.gotoY(14010,1);
+            r.Colect(0.3);
+            r.gotoY(-8000,1);
+            r.rotatie(45,1);
+            r.gotoY(-47250,1);
+            r.rotatie(90,1);
+            r.alinierePlaca(-5000,0.3);
+            r.prindrePlate();
+            r.startColectReverse();
+            cam.stopDetection();
+            r.Colect(-0.3);
+            r.gotoX(14000,1,250);
+            r.gotoX(-2000,1,250);
+            rotatie = r.totalRot;
+            r.rotatie(-90,1,10);
+            r.gotoY(-7000,1);
+            r.desprindrePlate();
+            sleep(1000);
+            rotatie-=90;
+            r.pidRotatie.setSetpoint(rotatie);
+            r.stopColect();
+            r.gotoX(-2000,1);
+            r.gotoY(47500, 1);
+            r.rotatie(180,1);
+            r.gotoX(-6900,1);
+            r.startColect();
+            r.gotoY(5000,1);
+            r.Colect(0.3);
+            r.gotoX(7000,1);
+            r.gotoY(30000,1);
+            r.startColectReverse();
+            r.gotoY(-10000,1);
+            /*
+            r.startColect();
+            r.gotoY(8500,1);
+            r.Colect(0.3);
+            r.gotoY(-8500,1);
+            r.rotatie(-135,1);
+            r.gotoX(-2000,1);
+            r.gotoY(15000,1);
+            r.startColectReverse();
+            r.gotoY(-10000,1);
+             */
+        }
+
+
         else{ //caz == "1"
             r.gotoY(12000, 1);
             r.rotatie(45,1);
@@ -90,27 +151,28 @@ public class AutoTestRed extends LinearOpMode {
             r.rotatie(45,1);
             r.gotoY(-45000,1);
             r.rotatie(90,1);
-            r.alinierePlaca(-4500,0.2);
+            r.alinierePlaca(-5000,0.3);
             r.prindrePlate();
             r.startColectReverse();
             sleep(1000);
             r.Colect(-0.3);
-            r.gotoX(12000,1,250);
+            r.gotoX(14000,1,250);
             r.gotoX(-2000,1,250);
             rotatie = r.totalRot;
             r.rotatie(-90,1,10);
-            r.gotoY(-5000,1);
+            r.gotoY(-7000,1);
             r.desprindrePlate();
             sleep(1000);
             rotatie-=90;
             r.pidRotatie.setSetpoint(rotatie);
+            r.stopColect();
             r.gotoX(-4500,1);
             r.gotoY(26000, 1);
             r.rotatie(-45,1);
             r.startColect();
-            r.gotoY(8000,1);
+            r.gotoY(8500,1);
             r.Colect(0.3);
-            r.gotoY(-8000,1);
+            r.gotoY(-8500,1);
             r.rotatie(-135,1);
             r.gotoX(-2000,1);
             r.gotoY(15000,1);
