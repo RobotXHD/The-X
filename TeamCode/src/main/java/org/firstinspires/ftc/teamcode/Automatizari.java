@@ -12,6 +12,7 @@ public class Automatizari extends OpMode {
 
     }
 
+
     @Override
     public void loop() {
         telemetry.addData("Pot", potentiometru.getVoltage());
