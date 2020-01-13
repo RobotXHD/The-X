@@ -61,6 +61,11 @@ public class TeleOp_Colect extends OpMode {
         public void run() {
             /**repeat until the program stops*/
             while (!stop) {
+                if(touchScissorDr.isPressed()&& touchScissorSt.isPressed()){
+                    scissorDreapta.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    scissorStanga.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                }
                 leftStickY = -gamepad2.left_stick_y;
                 scissorStanga.setPower(leftStickY);
                 scissorDreapta.setPower(leftStickY);
@@ -274,8 +279,8 @@ public class TeleOp_Colect extends OpMode {
         /**set the mode of the motors*/
         scissorStanga.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         scissorStanga.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        scissorDreapta.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        scissorStanga.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        scissorDreapta.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        scissorStanga.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motordf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motords.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorsf.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -302,11 +307,15 @@ public class TeleOp_Colect extends OpMode {
     /**using the loop function to send the telemetry to the phone */
     @Override
     public void loop() {
-        telemetry.addData("poz",servoParcare.getPosition());
+        telemetry.addData("TouchscDr", touchScissorDr.isPressed());
+        telemetry.addData("TouchscSt", touchScissorSt.isPressed());
+        telemetry.addData("scDr",scissorDreapta.getCurrentPosition());
+        telemetry.addData("scSt",scissorStanga.getCurrentPosition());
         telemetry.update();
     }
 
     /**
+
      using the stop function to stop the threads
      */
     public void stop() {
