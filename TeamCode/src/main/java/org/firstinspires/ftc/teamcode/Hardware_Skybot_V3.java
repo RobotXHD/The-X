@@ -28,7 +28,7 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
     public PIDControllerAdevarat pidX = new PIDControllerAdevarat(0,0,0);
     public double correctionR,correctionY,correctionX;
     public double ds, df, ss, sf, Y, tempRot, max;
-    public Servo  servoPlatformaSt, servoPlatformaDr;
+    public Servo  servoPlatformaSt, servoPlatformaDr, servoCapstone;
     public int verifications = 0;
     public int totalY = 0, totalX = 0, totalRot = 0;
 
@@ -51,6 +51,7 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
 
         servoPlatformaDr = hard.servo.get(configs.servoPlatformaDrName);
         servoPlatformaSt = hard.servo.get(configs.servoPlatformaStName);
+        servoCapstone = hard.servo.get("capstone");
 
         motordf.setPower(0);
         motords.setPower(0);
@@ -75,6 +76,8 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
         motords.setDirection(DcMotorSimple.Direction.REVERSE);
         motordf.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        servoCapstone.setPosition(0);
+
         if(startTh){
             encoderRead.start();
         }
@@ -96,7 +99,21 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
 
     }
 
-    private void power(double ds, double df, double ss, double sf) {
+    private void powerY(double ds, double df, double ss, double sf) {
+        motordf.setPower(df);
+        motorsf.setPower(sf);
+        motords.setPower(ds);
+        motorss.setPower(ss);
+    }
+
+    private void powerX(double ds, double df, double ss, double sf) {
+        motorss.setPower(ss);
+        motorsf.setPower(sf);
+        motords.setPower(ds);
+        motordf.setPower(df);
+    }
+
+    private void powerRot(double ds, double df, double ss, double sf) {
         motordf.setPower(df);
         motorss.setPower(ss);
         motorsf.setPower(sf);
@@ -143,10 +160,10 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
                 sf /= max;
                 ss /= max;
             }
-            power(ds, df, ss, sf);
+            powerY(ds, df, ss, sf);
             verifications = pidY.onTarget() ? verifications + 1 : 0;
         }while(verifications < PIDControllerTestConfig.targetVerifications);
-        power(0,0,0,0);
+        powerY(0,0,0,0);
     }
 
     public void gotoY(double incrementalY, double maxPow, double tolerance){
@@ -185,10 +202,10 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
                 sf /= max;
                 ss /= max;
             }
-            power(ds, df, ss, sf);
+            powerY(ds, df, ss, sf);
             verifications = pidY.onTarget() ? verifications + 1 : 0;
         }while(verifications < PIDControllerTestConfig.targetVerifications);
-        power(0,0,0,0);
+        powerY(0,0,0,0);
     }
 
 
@@ -228,10 +245,10 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
                 sf /= max;
                 ss /= max;
             }
-            power(ds, df, ss, sf);
+            powerRot(ds, df, ss, sf);
             verifications = pidRotatie.onTarget() ? verifications+1 : 0;
         }while (verifications < PIDControllerTestConfig.targetVerifications);
-        power(0,0,0,0);
+        powerRot(0,0,0,0);
     }
 
     public void rotatie(double incrementalRot, double maxPow, double tolerance){
@@ -269,10 +286,10 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
                 sf /= max;
                 ss /= max;
             }
-            power(ds, df, ss, sf);
+            powerRot(ds, df, ss, sf);
             verifications = pidRotatie.onTarget() ? verifications+1 : 0;
         }while (verifications < PIDControllerTestConfig.targetVerifications);
-        power(0,0,0,0);
+        powerRot(0,0,0,0);
     }
 
 
@@ -312,10 +329,10 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
                 sf /= max;
                 ss /= max;
             }
-            power(ds, df, ss, sf);
+            powerX(ds, df, ss, sf);
             verifications = pidX.onTarget() ? verifications+1 : 0;
         }while(verifications < PIDControllerTestConfig.targetVerifications);
-        power(0,0,0,0);
+        powerX(0,0,0,0);
     }
 
     public void gotoX(double incrementalX, double maxPow, double tolerance){
@@ -353,10 +370,10 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
                 sf /= max;
                 ss /= max;
             }
-            power(ds, df, ss, sf);
+            powerX(ds, df, ss, sf);
             verifications = pidX.onTarget() ? verifications+1 : 0;
         }while(verifications < PIDControllerTestConfig.targetVerifications);
-        power(0,0,0,0);
+        powerX(0,0,0,0);
     }
 
 
@@ -386,9 +403,9 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
                 sf /= max;
                 ss /= max;
             }
-            power(ds, df, ss, sf);
+            powerY(ds, df, ss, sf);
         }while(Y > totalY + 250 || Y < totalY - 250);
-        power(0,0,0,0);
+        powerY(0,0,0,0);
     }
 
     public void rotatiePlaca(double rotatie, int power){
@@ -417,8 +434,9 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
                 sf /= max;
                 ss /= max;
             }
-            power(ds, df, ss, sf);
+            powerRot(ds, df, ss, sf);
         }while(Rotatie > totalRot + 2 || Rotatie < totalRot - 2);
+        powerRot(0,0,0,0);
     }
 
     private Thread encoderRead = new Thread(new Runnable() {

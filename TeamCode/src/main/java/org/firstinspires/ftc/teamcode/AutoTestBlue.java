@@ -14,6 +14,12 @@ public class AutoTestBlue extends LinearOpMode {
         cam.Init(hardwareMap);
         r.Init(hardwareMap);
         cam.startDetection();
+        sleep(1000);
+        while(cam.webcam.getFps() == 0){
+            cam.stopDetection();
+            cam.startDetection();
+            sleep(1000);
+        }
         while (!isStarted()){
             telemetry.addData("X:", cam.stoneDetectorModified.foundScreenPositions().get(0).x);
             telemetry.addData("Y:", cam.stoneDetectorModified.foundScreenPositions().get(0).y);
@@ -66,12 +72,12 @@ public class AutoTestBlue extends LinearOpMode {
             r.stopColect();
             r.gotoX(5000,1);
             r.gotoY(35500, 1);
-            r.gotoX(-11000,1);
+            r.gotoX(-12000,1);
             r.gotoX(3100,1);
             r.startColect();
             r.gotoY(5000,1);
             r.Colect(0.3);
-            r.gotoX(-7900, 1);
+            r.gotoX(8900, 1);
             r.rotatie(180,1);
             r.gotoY(25000,1);
             r.startColectReverse();
@@ -89,7 +95,6 @@ public class AutoTestBlue extends LinearOpMode {
              */
         }
 
-
         else if(caz == 0){
             r.gotoY(8000, 1);
             r.rotatie(-45,1);
@@ -97,6 +102,7 @@ public class AutoTestBlue extends LinearOpMode {
             r.gotoY(14010,1);
             r.Colect(0.3);
             r.gotoY(-8000,1);
+
             r.rotatie(-45,1);
             r.gotoY(-47250,1);
             r.rotatie(-90,1);

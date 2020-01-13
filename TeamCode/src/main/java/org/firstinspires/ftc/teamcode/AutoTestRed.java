@@ -7,13 +7,19 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 public class AutoTestRed extends LinearOpMode {
     Hardware_Cam cam = new Hardware_Cam();
     Hardware_Skybot_V3 r = new Hardware_Skybot_V3(true);
-    private int caz;
+    private int caz = 1;
     private double rotatie;
     @Override
     public void runOpMode() {
         cam.Init(hardwareMap);
         r.Init(hardwareMap);
         cam.startDetection();
+        sleep(1000);
+        while(cam.webcam.getFps() == 0){
+            cam.stopDetection();
+            cam.startDetection();
+            sleep(1000);
+        }
         while (!isStarted()){
             telemetry.addData("X:", cam.stoneDetectorModified.foundScreenPositions().get(0).x);
             telemetry.addData("Y:", cam.stoneDetectorModified.foundScreenPositions().get(0).y);
@@ -25,10 +31,9 @@ public class AutoTestRed extends LinearOpMode {
                 telemetry.addData("Position", "CENTER");
                 caz = 0;
             }
-            else{
+            else {
                 telemetry.addData("Position", "RIGHT");
                 caz = 1;
-
             }
             telemetry.update();
             /*telemetry.addData("DR", r.encDr);
@@ -44,19 +49,19 @@ public class AutoTestRed extends LinearOpMode {
             r.gotoY(3500,1);
             r.rotatie(45,1);
             r.startColect();
-            r.gotoY(20020,1);
+            r.gotoY(20000,1);
             r.Colect(0.3);
             r.gotoY(-8000,1);
             r.rotatie(45,1);
             r.gotoY(-53500,1);
-            r.rotatie(90,1);
-            r.alinierePlaca(-5000,0.3);
+            r.rotatie(90,0.6);
+            r.alinierePlaca(-5500,0.3);
             r.prindrePlate();
             r.startColectReverse();
             sleep(1500);
             r.Colect(-0.3);
-            r.gotoX(14000,1,250);
-            r.gotoX(-2000,1,250);
+            r.gotoX(14000,1, PIDControllerTestConfig.toleranceXPlaca);
+            r.gotoX(-2000,1, PIDControllerTestConfig.toleranceXPlaca);
             rotatie = r.totalRot;
             r.rotatie(-90,1,10);
             r.gotoY(-7000,1);
@@ -67,7 +72,7 @@ public class AutoTestRed extends LinearOpMode {
             r.stopColect();
             r.gotoX(-2500,1);
             r.gotoY(35500, 1);
-            r.gotoX(10500,1);
+            r.gotoX(13500,1);
             r.gotoX(-3100,1);
             r.startColect();
             r.gotoY(5000,1);
@@ -101,13 +106,13 @@ public class AutoTestRed extends LinearOpMode {
             r.rotatie(45,1);
             r.gotoY(-47250,1);
             r.rotatie(90,1);
-            r.alinierePlaca(-5000,0.3);
+            r.alinierePlaca(-5500,0.3);
             r.prindrePlate();
             r.startColectReverse();
             sleep(1500);
             r.Colect(-0.3);
-            r.gotoX(14000,1,250);
-            r.gotoX(-2000,1,250);
+            r.gotoX(14000,1, PIDControllerTestConfig.toleranceXPlaca);
+            r.gotoX(-2000,1, PIDControllerTestConfig.toleranceXPlaca);
             rotatie = r.totalRot;
             r.rotatie(-90,1,10);
             r.gotoY(-7000,1);
@@ -151,13 +156,13 @@ public class AutoTestRed extends LinearOpMode {
             r.rotatie(45,1);
             r.gotoY(-45000,1);
             r.rotatie(90,1);
-            r.alinierePlaca(-5000,0.3);
+            r.alinierePlaca(-5500,0.3);
             r.prindrePlate();
             r.startColectReverse();
             sleep(1500);
             r.Colect(-0.3);
-            r.gotoX(14000,1,250);
-            r.gotoX(-2000,1,250);
+            r.gotoX(14000,1, PIDControllerTestConfig.toleranceXPlaca);
+            r.gotoX(-2000,1, PIDControllerTestConfig.toleranceXPlaca);
             rotatie = r.totalRot;
             r.rotatie(-90,1,10);
             r.gotoY(-7000,1);

@@ -22,7 +22,7 @@ import java.util.List;
 
 public class Hardware_Cam<ArrayList> extends LinearOpMode {
 
-    private OpenCvCamera webcam;
+    public OpenCvCamera webcam;
     private int resWidth = 640, resHeight = 480;
     private Point p1 = new Point(150,0);
     private Point p2 = new Point(resHeight,resWidth-150);

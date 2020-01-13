@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -16,7 +16,7 @@ import org.openftc.revextensions2.ExpansionHubEx;
 import static java.lang.Math.abs;
 
 @TeleOp
-public class TeleOp_Colect extends OpMode {
+public class TeleOp_ColectQ extends OpMode {
     /**
      * declare the motors
      */
@@ -53,7 +53,7 @@ public class TeleOp_Colect extends OpMode {
     private boolean stop;
     private boolean apoz = false, alast = true, apoz2 = false, alast2 = true, apoz3 = false, alast3 = true, eStrans = false;
     private double powerColect = 1, powerSlider;
-    private TouchSensor  touchScissorDr, touchScissorSt, touchGheara;
+    private TouchSensor  touchScissorDr, touchScissorSt;
     private volatile double expansionHubOdometrieCurrent, expansionHubSistemeCurrent;;
 
     private Thread Colect = new Thread(new Runnable() {
@@ -70,7 +70,7 @@ public class TeleOp_Colect extends OpMode {
                 if (alast != abut) {
                     if (gamepad2.b) {
                         apoz = !apoz;
-                        if (apoz && !touchGheara.isPressed()) {
+                        if (apoz) {
                             motorColectSt.setPower(-powerColect);
                             motorColectDr.setPower(powerColect);
                             servoclamp.setPosition(0.7);
@@ -87,7 +87,7 @@ public class TeleOp_Colect extends OpMode {
                 if (alast2 != abut2) {
                     if (gamepad2.x) {
                         apoz2 = !apoz2;
-                        if (apoz2 && !touchGheara.isPressed()) {
+                        if (apoz2) {
                             motorColectSt.setPower(powerColect);
                             motorColectDr.setPower(-powerColect);
                    //         servoclamp.setPosition(0.65);
@@ -97,12 +97,6 @@ public class TeleOp_Colect extends OpMode {
                         }
                     }
                     alast2 = abut2;
-                }
-                if(touchGheara.isPressed() && motorColectDr.getPower() != 0){
-                    servoclamp.setPosition(0);
-                    motorColectSt.setPower(0);
-                    motorColectDr.setPower(0);
-                    apoz3 = true;
                 }
 
 
@@ -119,7 +113,7 @@ public class TeleOp_Colect extends OpMode {
                     alast3 = abut3;
                 }
 
-               powerSlider = gamepad2.right_stick_y;
+                powerSlider = gamepad2.right_stick_y;
                 if (powerSlider < 0) {
                     vexDr.setPosition(0.5 + powerSlider / 2);
                     vexSt.setPosition(0.5 - powerSlider / 2);
@@ -219,19 +213,6 @@ public class TeleOp_Colect extends OpMode {
         }
     });
 
-    public Thread automation = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            while (!stop) {
-                if (touchGheara.isPressed()) {
-                    apoz3 = false;
-                    servoclamp.setPosition(1);
-                    motorColectDr.setPower(0);
-                    motorColectSt.setPower(0);
-                }
-            }
-        }
-    });
     @Override
     public void init() {
         /**initialization motors*/
@@ -259,8 +240,6 @@ public class TeleOp_Colect extends OpMode {
         vexDr = hardwareMap.get(ServoImplEx.class, "vexDr");
         vexSt = hardwareMap.get(ServoImplEx.class, "vexSt");
 
-        touchGheara= hardwareMap.touchSensor.get(configs.touchGhearaName);
-        touchScissorDr = hardwareMap.touchSensor.get(configs.touchScissorDr);
         touchScissorSt = hardwareMap.touchSensor.get(configs.touchScissorSt);
 
         motords.setDirection(DcMotorSimple.Direction.REVERSE);
