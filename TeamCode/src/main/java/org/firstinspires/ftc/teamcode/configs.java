@@ -35,6 +35,11 @@ public class  configs {
     public static final String scissorStName = "scissorSt";
     public static final String colectDrName = "colectDr";
     public static final String colectStName = "colectSt";
+    public static final String servoclampName = "clamp";
+    public static final String vexDrName = "vexDr";
+    public static final String vexStName = "vexSt";
+    public static final String servoParcareName = "parcare";
+    public static final String servoCapstoneName = "capstone";
     public static final String expansionHubOdometrieName = "Expansion Hub Odometrie";
     public static final String expansionHubSistemeName = "Expansion Hub Sisteme";
     public static final String servoPlatformaDrName = "PlatformaDr";

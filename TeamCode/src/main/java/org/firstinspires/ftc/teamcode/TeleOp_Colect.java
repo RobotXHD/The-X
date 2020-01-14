@@ -61,11 +61,7 @@ public class TeleOp_Colect extends OpMode {
         public void run() {
             /**repeat until the program stops*/
             while (!stop) {
-                if(touchScissorDr.isPressed()&& touchScissorSt.isPressed()){
-                    scissorDreapta.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    scissorStanga.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-                }
                 leftStickY = -gamepad2.left_stick_y;
                 scissorStanga.setPower(leftStickY);
                 scissorDreapta.setPower(leftStickY);

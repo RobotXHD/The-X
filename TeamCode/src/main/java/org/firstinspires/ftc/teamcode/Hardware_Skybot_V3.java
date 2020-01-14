@@ -12,8 +12,7 @@ import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.RevBulkData;
 
 public class  Hardware_Skybot_V3 extends LinearOpMode {
-    public boolean startTh = false;
-    public double encDr, encSt, encSp;
+
     public RevBulkData bulkData;
     public ExpansionHubMotor encoderDreapta, encoderSpate, encoderStanga;
     public ExpansionHubEx expansionHub;
@@ -21,16 +20,17 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
     public DcMotor motorColectSt, motorColectDr;
     public DcMotorEx scissorDreapta;
     public DcMotorEx scissorStanga;
-
+    public Servo  servoPlatformaSt, servoPlatformaDr, servoCapstone, vexDr, vexSt, servoParcare,servoClamp;
+    public int verifications = 0;
+    public int totalY = 0, totalX = 0, totalRot = 0;
+    public double correctionR,correctionY,correctionX;
+    public double ds, df, ss, sf, Y, tempRot, max;
+    public double encDr, encSt, encSp;
     public double Rotatie = 0, ticksPerDegree = PIDControllerTestConfig.rotationCalib;
     public PIDControllerAdevarat pidRotatie = new PIDControllerAdevarat(0,0,0);
     public PIDControllerAdevarat pidY = new PIDControllerAdevarat(0,0,0);
     public PIDControllerAdevarat pidX = new PIDControllerAdevarat(0,0,0);
-    public double correctionR,correctionY,correctionX;
-    public double ds, df, ss, sf, Y, tempRot, max;
-    public Servo  servoPlatformaSt, servoPlatformaDr, servoCapstone;
-    public int verifications = 0;
-    public int totalY = 0, totalX = 0, totalRot = 0;
+    public boolean startTh = false;
 
     public Hardware_Skybot_V3(boolean startThreads) {startTh = startThreads;}
     public Hardware_Skybot_V3(){}
@@ -51,7 +51,13 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
 
         servoPlatformaDr = hard.servo.get(configs.servoPlatformaDrName);
         servoPlatformaSt = hard.servo.get(configs.servoPlatformaStName);
-        servoCapstone = hard.servo.get("capstone");
+        servoCapstone = hard.servo.get(configs.servoCapstoneName);
+        servoParcare = hard.servo.get(configs.servoParcareName);
+        servoClamp = hard.get(Servo.class, configs.servoclampName);
+
+        vexDr = hard.get(Servo.class, configs.vexDrName);
+        vexSt = hard.get(Servo.class, configs.vexStName);
+
 
         motordf.setPower(0);
         motords.setPower(0);
@@ -479,7 +485,6 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
         servoPlatformaSt.setPosition(1);
     }
 
-
     public void desprindrePlate(){
         servoPlatformaDr.setPosition(1);
         servoPlatformaSt.setPosition(0);
@@ -495,7 +500,6 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
         scissorStanga.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         while(scissorStanga.isBusy()){
-
         }
 
     }
