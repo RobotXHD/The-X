@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.openftc.revextensions2.ExpansionHubEx;
@@ -21,9 +23,11 @@ public class Automatizari extends OpMode {
     private ExpansionHubMotor scissorDreapta;
     private ExpansionHubMotor scissorStanga;
     private TouchSensor touchScissorDr, touchScissorSt;
+    private AnalogInput potentiometru;
+    public Servo vexDr, vexSt,servoClamp;
     public boolean stop = false;
     private double offsetDreapta, offsetStanga;
-    private volatile double encoderDreapta, encoderStranga;
+    private volatile double encoderDreapta, encoderStranga, encpot;
     private PIDControllerAdevarat pidScissorDr = new PIDControllerAdevarat(0, 0, 0);
     private PIDControllerAdevarat pidScissorSt = new PIDControllerAdevarat(0, 0, 0);
 
@@ -43,8 +47,17 @@ public class Automatizari extends OpMode {
         scissorDreapta.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         scissorStanga.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        touchScissorDr = hardwareMap.touchSensor.get(configs.touchScissorDr);
-        touchScissorSt = hardwareMap.touchSensor.get(configs.touchScissorSt);
+        scissorDreapta.setDirection(DcMotorSimple.Direction.REVERSE);
+        scissorStanga.setDirection(DcMotorSimple.Direction.REVERSE);
+
+         servoClamp = hardwareMap.servo.get(configs.servoclampName);
+         vexDr = hardwareMap.servo.get(configs.vexDrName);
+         vexSt = hardwareMap.servo.get(configs.vexStName);
+
+        touchScissorDr = hardwareMap.touchSensor.get(configs.touchScissorDrName);
+        touchScissorSt = hardwareMap.touchSensor.get(configs.touchScissorStName);
+
+         potentiometru = hardwareMap.analogInput.get(configs.potentiometruName);
 
         pidScissorDr.setSetpoint(0);
         pidScissorSt.setSetpoint(0);
@@ -62,8 +75,10 @@ public class Automatizari extends OpMode {
 
                 pidScissorDr.setPID(Automatizari_config.kp, Automatizari_config.ki, Automatizari_config.kd);
                 pidScissorSt.setPID(Automatizari_config.kp, Automatizari_config.ki, Automatizari_config.kd);
-                pidScissorDr.setSetpoint(Automatizari_config.setpoint);
-                pidScissorSt.setSetpoint(Automatizari_config.setpoint);
+                pidScissorDr.setSetpoint(Automatizari_config.setpointScissor);
+                pidScissorSt.setSetpoint(Automatizari_config.setpointScissor);
+                pidScissorDr.setTolerance(Automatizari_config.toleranceScissorDr);
+                pidScissorSt.setTolerance(Automatizari_config.toleranceScissorSt);
 
                 scissorDreapta.setPower(pidScissorDr.performPID(encoderDreapta));
                 scissorStanga.setPower(pidScissorSt.performPID(encoderStranga));
@@ -77,7 +92,7 @@ public class Automatizari extends OpMode {
                     pidScissorSt.setSetpoint(0);
                 }
 
-                TelemetryPacket packet = new TelemetryPacket();
+               /* TelemetryPacket packet = new TelemetryPacket();
                 packet.put("EncSt", encoderStranga);
                 packet.put("EncDr", encoderDreapta);
                 packet.put("P_S", Automatizari_config.kp * pidScissorSt.getError());
@@ -86,15 +101,17 @@ public class Automatizari extends OpMode {
                 packet.put("I_D", Automatizari_config.ki * pidScissorDr.getISum());
                 packet.put("D_S", Automatizari_config.kd * pidScissorSt.getDError());
                 packet.put("D_D", Automatizari_config.kd * pidScissorDr.getDError());
+                packet.put("onTargetDr", pidScissorDr.onTarget());
+                packet.put("onTargetSt", pidScissorSt.onTarget());
                 packet.put("Sp", Automatizari_config.setpoint);
                 packet.put("offsetDr", touchScissorDr.isPressed());
                 packet.put("offsetSt", touchScissorSt.isPressed());
-                ftcDashboard.sendTelemetryPacket(packet);
+                ftcDashboard.sendTelemetryPacket(packet);*/
             }
         }
     });
     private Thread read = new Thread(new Runnable() {
-        double s,d;
+        double s,d, encPotntiometru;
         @Override
         public void run() {
             while(!stop){
@@ -104,11 +121,24 @@ public class Automatizari extends OpMode {
 
                 encoderDreapta = d;
                 encoderStranga = s;
+
+                encPotntiometru = bulkData.getAnalogInputValue(potentiometru);
+                encpot= encPotntiometru;
+                TelemetryPacket packet = new TelemetryPacket();
+                packet.put("Pot", encpot);
+                ftcDashboard.sendTelemetryPacket(packet);
             }
         }
     });
 
+    private Thread podRulant = new Thread(new Runnable() {
+        @Override
+        public void run(){
+            while(!stop){
 
+            }
+        }
+    });
     @Override
     public void loop() {
     }

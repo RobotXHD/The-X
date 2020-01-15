@@ -18,9 +18,7 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
     public ExpansionHubEx expansionHub;
     public ExpansionHubMotor motorss, motorsf, motords, motordf;
     public DcMotor motorColectSt, motorColectDr;
-    public DcMotorEx scissorDreapta;
-    public DcMotorEx scissorStanga;
-    public Servo  servoPlatformaSt, servoPlatformaDr, servoCapstone, vexDr, vexSt, servoParcare,servoClamp;
+    public Servo  servoPlatformaSt, servoPlatformaDr, servoCapstone, servoParcare;
     public int verifications = 0;
     public int totalY = 0, totalX = 0, totalRot = 0;
     public double correctionR,correctionY,correctionX;
@@ -53,11 +51,6 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
         servoPlatformaSt = hard.servo.get(configs.servoPlatformaStName);
         servoCapstone = hard.servo.get(configs.servoCapstoneName);
         servoParcare = hard.servo.get(configs.servoParcareName);
-        servoClamp = hard.get(Servo.class, configs.servoclampName);
-
-        vexDr = hard.get(Servo.class, configs.vexDrName);
-        vexSt = hard.get(Servo.class, configs.vexStName);
-
 
         motordf.setPower(0);
         motords.setPower(0);
@@ -488,20 +481,6 @@ public class  Hardware_Skybot_V3 extends LinearOpMode {
     public void desprindrePlate(){
         servoPlatformaDr.setPosition(1);
         servoPlatformaSt.setPosition(0);
-    }
-
-    public void moveScissor(int target){
-        scissorDreapta.setPower(1);
-        scissorStanga.setPower(1);
-        scissorDreapta.setTargetPosition(target);
-        scissorStanga.setTargetPosition(target);
-
-        scissorDreapta.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        scissorStanga.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        while(scissorStanga.isBusy()){
-        }
-
     }
 
 }

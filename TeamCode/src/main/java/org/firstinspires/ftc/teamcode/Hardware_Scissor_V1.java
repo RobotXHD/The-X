@@ -1,6 +1,4 @@
 package org.firstinspires.ftc.teamcode;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -20,7 +18,7 @@ public class Hardware_Scissor_V1 extends LinearOpMode {
     private ExpansionHubMotor scissorStanga;
     private TouchSensor touchScissorDr, touchScissorSt;
     public boolean stop = false;
-    public double verifications,total;
+    public double verifications;
     private volatile double encoderDreapta, encoderStranga;
     private PIDControllerAdevarat pidScissorDr = new PIDControllerAdevarat(0, 0, 0);
     private PIDControllerAdevarat pidScissorSt = new PIDControllerAdevarat(0, 0, 0);
@@ -29,9 +27,8 @@ public class Hardware_Scissor_V1 extends LinearOpMode {
 
     public void Init(HardwareMap hard) {
         expansionHubSisteme = hard.get(ExpansionHubEx.class, configs.expansionHubSistemeName);
-        scissorDreapta = (ExpansionHubMotor) hard.get(ExpansionHubMotor.class, configs.scissorDrName);
+        scissorDreapta = (ExpansionHubMotor) hard.get(DcMotorEx.class, configs.scissorDrName);
         scissorStanga = (ExpansionHubMotor) hard.get(DcMotorEx.class, configs.scissorStName);
-
 
         scissorDreapta.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         scissorStanga.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -45,8 +42,8 @@ public class Hardware_Scissor_V1 extends LinearOpMode {
         scissorDreapta.setDirection(DcMotorSimple.Direction.REVERSE);
         scissorStanga.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        touchScissorDr = hard.touchSensor.get(configs.touchScissorDr);
-        touchScissorSt = hard.touchSensor.get(configs.touchScissorSt);
+        touchScissorDr = hard.touchSensor.get(configs.touchScissorDrName);
+        touchScissorSt = hard.touchSensor.get(configs.touchScissorStName);
 
         pidScissorDr.setSetpoint(0);
         pidScissorSt.setSetpoint(0);
@@ -63,13 +60,11 @@ public class Hardware_Scissor_V1 extends LinearOpMode {
         read.start();
     }
 
-    public void goScissor(double incremental){
-        total += incremental;
+    public void goScissor(double position){
         verifications = 0;
 
-        pidScissorDr.setSetpoint(total);
-        pidScissorSt.setSetpoint(total);
-
+        pidScissorDr.setSetpoint(position);
+        pidScissorSt.setSetpoint(position);
 
         pidScissorSt.setTolerance(Automatizari_config.toleranceScissorSt);
         pidScissorDr.setTolerance(Automatizari_config.toleranceScissorDr);
@@ -86,18 +81,20 @@ public class Hardware_Scissor_V1 extends LinearOpMode {
         public void run() {
             while (!stop) {
 
-                pidScissorDr.setSetpoint(Automatizari_config.setpoint);
-                pidScissorSt.setSetpoint(Automatizari_config.setpoint);
+                pidScissorDr.setSetpoint(Automatizari_config.setpointScissor);
+                pidScissorSt.setSetpoint(Automatizari_config.setpointScissor);
 
                 scissorDreapta.setPower(pidScissorDr.performPID(encoderDreapta));
                 scissorStanga.setPower(pidScissorSt.performPID(encoderStranga));
 
                 if (touchScissorDr.isPressed()) {
                     scissorDreapta.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    scissorDreapta.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     pidScissorDr.setSetpoint(0);
                 }
                 if (touchScissorSt.isPressed()) {
                     scissorStanga.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    scissorStanga.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     pidScissorSt.setSetpoint(0);
                 }
             }

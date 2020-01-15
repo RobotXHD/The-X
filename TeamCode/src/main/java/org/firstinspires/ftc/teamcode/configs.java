@@ -45,6 +45,7 @@ public class  configs {
     public static final String servoPlatformaDrName = "PlatformaDr";
     public static final String servoPlatformaStName = "PlatformaSt";
     public static final String touchGhearaName = "touchGheara";
-    public static final String touchScissorDr = "touchScissorDr";
-    public static final String touchScissorSt = "touchScissorSt";
+    public static final String touchScissorDrName = "touchScissorDr";
+    public static final String touchScissorStName = "touchScissorSt";
+    public static final String potentiometruName = "pot";
 }

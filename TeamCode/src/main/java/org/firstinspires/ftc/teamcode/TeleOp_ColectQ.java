@@ -240,7 +240,7 @@ public class TeleOp_ColectQ extends OpMode {
         vexDr = hardwareMap.get(ServoImplEx.class, "vexDr");
         vexSt = hardwareMap.get(ServoImplEx.class, "vexSt");
 
-        touchScissorSt = hardwareMap.touchSensor.get(configs.touchScissorSt);
+        touchScissorSt = hardwareMap.touchSensor.get(configs.touchScissorStName);
 
         motords.setDirection(DcMotorSimple.Direction.REVERSE);
         motorss.setDirection(DcMotorSimple.Direction.REVERSE);
